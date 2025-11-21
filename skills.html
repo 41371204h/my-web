@@ -1,35 +1,32 @@
 <!DOCTYPE html>
-background-color: #F5F0E6;
-color: #5A3E36;
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>特質與技能｜李雅郁</title>
+<style>
+body { margin:0; font-family:"Noto Sans TC", sans-serif; background:#F7F3EE; color:#5A463A; }
+header{ background: linear-gradient(135deg,#8B6F5E,#C1A186); color:white; padding:40px; text-align:center; animation:fadein 1s; }
+nav{ background:#D5C1A8; padding:12px; text-align:center; position:sticky; top:0; }
+nav a{ margin:0 20px; color:white; text-decoration:none; font-weight:bold; transition:0.3s; }
+nav a:hover{ text-shadow:0 0 6px white; }
+
+
+.container{ max-width:900px; margin:auto; padding:40px 20px; }
+.card{
+background:white; padding:25px; margin-bottom:25px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.1);
+animation:fadein 1s;
 }
-header {
-background-color: #8B6F5E;
-color: white;
-padding: 20px;
-text-align: center;
+.img-banner{
+width:100%; border-radius:12px; margin-bottom:20px;
 }
-nav {
-background-color: #C1A186;
-padding: 10px;
-text-align: center;
-}
-nav a {
-margin: 0 15px;
-text-decoration: none;
-color: white;
-font-weight: bold;
-}
-.container {
-padding: 40px;
-}
-.box {
-background: #E8DCD0;
-padding: 20px;
-margin-bottom: 25px;
-border-radius: 12px;
-}
+
+
+@keyframes fadein{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;} }
 </style>
 </head>
+
+
 <body>
 <header>
 <h1>特質、技能與個人優勢</h1>
@@ -44,25 +41,30 @@ border-radius: 12px;
 
 
 <div class="container">
-<div class="box">
+
+
+<img src="你的技能圖片檔名" class="img-banner" alt="技能圖片">
+
+
+<div class="card">
 <h2>特質與技能</h2>
 <ul>
-<li>善於解決問題（Excel、VBA、Arduino、HTML/CSS）</li>
-<li>邏輯清晰，擅長拆解複雜需求</li>
-<li>具備良好文字敘事與整理能力</li>
-<li>團隊合作中能協助穩定節奏、統整資訊</li>
-<li>具耐心與細心，能反覆調整直到結果完善</li>
+<li>擅長拆解複雜問題（Excel、VBA、HTML/CSS、Arduino）</li>
+<li>邏輯性強、具備系統思考能力</li>
+<li>擅長資料整理、視覺呈現、流程設計</li>
+<li>具有良好文字敘事能力，能統整繁雜內容</li>
+<li>耐心細心，能反覆調整直到結果完善</li>
 </ul>
 </div>
 
 
-<div class="box">
+<div class="card">
 <h2>個人優勢</h2>
 <ul>
-<li>能快速掌握陌生領域的規則並構思解方</li>
-<li>擅長協助他人釐清問題、給予可行步驟</li>
-<li>能融合技術與教育設計，提出兼具邏輯與人性的方案</li>
-<li>重視同理心，容易察覺他人需求或情緒變化</li>
+<li>快速理解陌生領域運作方式並提出改善方案</li>
+<li>協助他人釐清問題與建構具體做法</li>
+<li>能兼具技術視角與教育視角</li>
+<li>高度同理心，能察覺團隊需求與情緒細節</li>
 </ul>
 </div>
 </div>

@@ -1,30 +1,16 @@
 <!DOCTYPE html>
+width:100%; border-radius:12px; margin-bottom:15px;
 }
-nav {
-background-color: #C1A186;
-padding: 10px;
-text-align: center;
-}
-nav a {
-margin: 0 15px;
-text-decoration: none;
-color: white;
-font-weight: bold;
-}
-.container {
-padding: 40px;
-}
-.timeline {
-margin-bottom: 25px;
-padding: 20px;
-background: #E8DCD0;
-border-radius: 12px;
-}
+
+
+@keyframes fadein{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;} }
 </style>
 </head>
 <body>
+
+
 <header>
-<h1>我的經歷</h1>
+<h1>經歷與活動</h1>
 </header>
 
 
@@ -36,28 +22,36 @@ border-radius: 12px;
 
 
 <div class="container">
-<div class="timeline">
-<h2>🔹 災害教具開發｜基礎設計課程（2025）</h2>
+
+
+<div class="card">
+<img src="災害教具圖片檔名" class="event-img" alt="災害教具製作">
+<h2>📌 災害教具開發｜基礎設計課程（2025）</h2>
 <p>以「依賴科技防災：提升安全還是降低應變能力？」為議題，製作可操作的災害教具；負責模型構想、製作流程、學生操作方式規劃。</p>
 </div>
 
 
-<div class="timeline">
-<h2>🔹 社會責任課程教具設計（2025）</h2>
+<div class="card">
+<img src="急救教具圖片檔名" class="event-img" alt="急救教具製作">
+<h2>📌 社會責任課程教具設計（2025）</h2>
 <p>設計急救技能情境配對卡牌，負責腳本、任務流程與教學環節設計。</p>
 </div>
 
 
-<div class="timeline">
-<h2>🔹 宿營「器攝股」器材管理與拍攝（2025）</h2>
+<div class="card">
+<img src="宿營圖片檔名" class="event-img" alt="宿營活動">
+<h2>📌 宿營「器攝股」器材管理與拍攝（2025）</h2>
 <p>參與「名偵探科基 追企令」活動，負責器材調度、攝影、組內協作。</p>
 </div>
 
 
-<div class="timeline">
-<h2>🔹 VBA + Excel 數據整理專案（2024）</h2>
-<p>整合開放資料、寫 VBA 自動化繪製圖表，進行治安資料視覺化。</p>
+<div class="card">
+<img src="VBA專題圖片檔名" class="event-img" alt="資料視覺化專題">
+<h2>📌 VBA + Excel 數據整理專案（2024）</h2>
+<p>整合開放資料、撰寫 VBA 自動化繪製圖表，進行治安資料視覺化。</p>
 </div>
 </div>
+
+
 </body>
 </html>

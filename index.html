@@ -3,48 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>個人首頁｜李雅郁</title>
+<title>李雅郁｜個人首頁</title>
 <style>
-body {
-font-family: Arial, sans-serif;
-margin: 0;
-padding: 0;
-background-color: #F5F0E6;
-color: #5A3E36;
-}
+body { margin:0; font-family: "Noto Sans TC", sans-serif; background:#F7F3EE; color:#5A463A; }
 header {
-background-color: #8B6F5E;
-color: white;
-padding: 20px;
-text-align: center;
+background: linear-gradient(135deg, #8B6F5E, #C1A186);
+color:white; padding:50px 20px; text-align:center;
+animation: fadein 1.2s ease;
 }
-nav {
-background-color: #C1A186;
-padding: 10px;
-text-align: center;
+nav { background:#D5C1A8; padding:12px; text-align:center; position:sticky; top:0; }
+nav a{
+margin:0 20px; color:white; text-decoration:none; font-weight:bold;
+transition:0.3s;
 }
-nav a {
-margin: 0 15px;
-text-decoration: none;
-color: white;
-font-weight: bold;
+nav a:hover { text-shadow:0 0 6px white; }
+
+
+.container { max-width:900px; margin:auto; padding:40px 20px; }
+
+
+.card{
+background:white; padding:25px; margin-top:25px; border-radius:16px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+animation: fadein 1s ease;
 }
-.container {
-padding: 40px;
+.profile-img{
+width:180px; height:180px; object-fit:cover; border-radius:50%;
+display:block; margin:20px auto;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
-.contact-box {
-margin-top: 40px;
-padding: 20px;
-background: #E8DCD0;
-border-radius: 12px;
-width: 60%;
-}
+
+
+@keyframes fadein{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;} }
 </style>
 </head>
 <body>
 <header>
 <h1>李雅郁｜個人作品集</h1>
-<p>NTNU | 科技應用與人力資源發展學系</p>
+<p>NTNU｜科技應用與人力資源發展學系</p>
 </header>
 
 
@@ -56,13 +52,21 @@ width: 60%;
 
 
 <div class="container">
+<img src="你的圖片檔名" class="profile-img" alt="個人照片">
+
+
+<div class="card">
 <h2>關於我</h2>
-<p>我是來自國立臺灣師範大學科技應用與人力資源發展學系的李雅郁。目前專注於專題製作、教具開發、社會責任教育以及資料整理與呈現。喜歡跨領域合作，以同理心作為觀察與設計的基礎。</p>
+<p>我是國立臺灣師範大學科技應用與人力資源發展學系的學生，專長涵蓋專案規劃、教具開發、Excel/VBA、Arduino、資料視覺化與跨領域協作。喜歡觀察生活問題，並將其轉化為具體可執行的設計。</p>
+<p>在團隊合作中擅長做整合、分析、流程優化，也常協助撰寫技術內容與解決程式錯誤。</p>
+</div>
 
 
-<p>我擅長整理複雜資訊、改善流程並透過清晰的圖表/系統呈現成果。也常協助同學撰寫 Excel、VBA、Arduino、小型網頁等技術內容。</p>
-
-
-<div class="contact-box">
-<h3>聯絡資訊</h3>
+<div class="card">
+<h2>聯絡資訊</h2>
+<p>📧 Email：41371204H@ntnu.edu.tw</p>
+<p>🏫 學校：國立臺灣師範大學</p>
+</div>
+</div>
+</body>
 </html>
