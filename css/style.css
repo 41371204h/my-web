@@ -159,3 +159,70 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
     .contact-grid{grid-template-columns:1fr}
     .col-md-4{flex:1 1 100%}
 }
+/* --- Modal (彈出視窗) 樣式 --- */
+
+/* 遮罩背景 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* 半透明深色背景 */
+    display: none; /* 預設隱藏 */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+    display: flex; /* 顯示遮罩 */
+    opacity: 1;
+}
+
+/* 視窗主體 */
+.modal-content {
+    background: var(--card);
+    color: var(--text);
+    padding: 30px;
+    border-radius: var(--radius);
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9); /* 彈入動畫的起始狀態 */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.modal-overlay.open .modal-content {
+    transform: scale(1); /* 彈入動畫的結束狀態 */
+    opacity: 1;
+}
+
+.modal-content h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--primary);
+    margin-top: 0;
+}
+
+/* 關閉按鈕 */
+.modal-close {
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+    color: var(--accent);
+}
+
+.modal-details {
+    line-height: 1.7;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
