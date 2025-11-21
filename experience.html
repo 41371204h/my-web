@@ -17,52 +17,48 @@
 
 <body>
 
-    <div class="container nav">
-        <div class="brand">LI,YA,YU</div>
-        <nav class="nav-links">
-            <a href="index.html">主頁</a>
-            <a href="skill.html">特質與技能</a>
-            <a href="experience.html" class="active">經歷</a>
-        </nav>
-    </div>
-
-    <div id="experience" class="container py-5">
-        <section>
-            <div class="text-center">
-                <h2 class="mb-4 fade-in">經歷</h2>
-            </div>
-
-            <div class="row g-4 stagger">
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <img src="img/S-64315399-0.jpg" class="card-img-top" alt="大一">
-                        <div class="card-body">
-                            <h5 class="card-title">大一</h5>
-                            <p class="card-text">科技營活動股</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <img src="img/S-64315401-0.jpg" class="card-img-top" alt="大一">
-                        <div class="card-body">
-                            <h5 class="card-title">大一</h5>
-                            <p class="card-text">科技之夜公關股</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <img src="img/S-64315403.jpg" class="card-img-top" alt="宿營器設股">
-                        <div class="card-body">
-                            <h5 class="card-title">大二</h5>
-                            <p class="card-text">宿營器設股</p>
-                        </div>
+   <div class="row g-4 stagger">
+            <div class="col-md-4" onclick="openModal('camp')">
+                <div class="card h-100" style="cursor: pointer;">
+                    <img src="img/S-64315399-0.jpg" class="card-img-top" alt="大一">
+                    <div class="card-body">
+                        <h5 class="card-title">大一</h5>
+                        <p class="card-text" style="font-weight:600; color:var(--text);">科技營 活動股</p>
+                        <p style="font-size:0.9rem; color:var(--muted); margin-top:10px;">點擊查看詳細職責與學習成果...</p>
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+            
+            <div class="col-md-4" onclick="openModal('night')">
+                <div class="card h-100" style="cursor: pointer;">
+                    <img src="img/S-64315401-0.jpg" class="card-img-top" alt="大一">
+                    <div class="card-body">
+                        <h5 class="card-title">大一</h5>
+                        <p class="card-text" style="font-weight:600; color:var(--text);">科技之夜 公關股</p>
+                        <p style="font-size:0.9rem; color:var(--muted); margin-top:10px;">點擊查看詳細職責與學習成果...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" onclick="openModal('supper_camp')">
+                <div class="card h-100" style="cursor: pointer;">
+                    <img src="img/S-64315403.jpg" class="card-img-top" alt="宿營器設股">
+                    <div class="card-body">
+                        <h5 class="card-title">大二</h5>
+                        <p class="card-text" style="font-weight:600; color:var(--text);">宿營 器材設備股</p>
+                        <p style="font-size:0.9rem; color:var(--muted); margin-top:10px;">點擊查看詳細職責與學習成果...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="experienceModal" class="modal-overlay" onclick="closeModal(event)">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal()">×</span>
+                <h3 id="modalTitle"></h3>
+                <div class="modal-details" id="modalBody"></div>
+            </div>
+        </div>
     <footer>
         <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
