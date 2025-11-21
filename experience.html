@@ -1,57 +1,126 @@
 <!DOCTYPE html>
-width:100%; border-radius:12px; margin-bottom:15px;
-}
+<html lang="zh-Hant">
 
+<head>
+    <meta charset="utf-8">
+    <title>李雅郁的個人網站 | 經歷</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-@keyframes fadein{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;} }
-</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* [請將 index.html 的 <style> 內容完整複製貼到此處] */
+    </style>
 </head>
+
 <body>
 
+    <div class="container nav">
+        <div class="brand">LI,YA,YU</div>
+        <nav class="nav-links">
+            <a href="index.html">主頁</a>
+            <a href="skill.html">特質與技能</a>
+            <a href="experience.html" class="active">經歷</a>
+        </nav>
+    </div>
 
-<header>
-<h1>經歷與活動</h1>
-</header>
+    <div id="experience" class="container py-5">
+        <section>
+            <div class="text-center">
+                <h2 class="mb-4">經歷</h2>
+            </div>
 
+            <div class="row g-4 stagger">
+                <div class="col-md-4 fade-in">
+                    <div class="card h-100">
+                        <img src="img/S-64315399-0.jpg" class="card-img-top" alt="大一">
+                        <div class="card-body">
+                            <h5 class="card-title">大一</h5>
+                            <p class="card-text">科技營活動股</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 fade-in">
+                    <div class="card h-100">
+                        <img src="img/S-64315401-0.jpg" class="card-img-top" alt="大一">
+                        <div class="card-body">
+                            <h5 class="card-title">大一</h5>
+                            <p class="card-text">科技之夜公關股</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 fade-in">
+                    <div class="card h-100">
+                        <img src="img/S-64315403.jpg" class="card-img-top" alt="宿營器設股">
+                        <div class="card-body">
+                            <h5 class="card-title">大二</h5>
+                            <p class="card-text">宿營器設股</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer>
+        </footer>
 
-<nav>
-<a href="index.html">主頁</a>
-<a href="skills.html">特質與技能</a>
-<a href="experience.html">經歷</a>
-</nav>
+    <script>
+        // [將原檔案的 <script> 內容完整複製貼到此處，並修改如下]
 
+        // animate bars (保留，因為 skill.html 會用到)
+        function animateBars(){
+            document.querySelectorAll('.bar').forEach((b,i)=>{
+                const p = b.getAttribute('data-percent') || '0';
+                const fill = b.querySelector('.fill');
+                // staggered by index
+                setTimeout(()=>{
+                    fill.style.transition = 'width 900ms cubic-bezier(.2,.9,.2,1)';
+                    fill.style.width = p + '%';
+                }, 100*i);
+            })
+        }
 
-<div class="container">
+        // reveal on scroll using IntersectionObserver (保留，用於頁面內的動畫)
+        function setupScrollReveal(){
+            const io = new IntersectionObserver((entries)=>{
+                entries.forEach((ent)=>{
+                    if(ent.isIntersecting){
+                        ent.target.classList.add('show');
+                        // stagger children if container
+                        if(ent.target.classList.contains('stagger')){
+                            const children = Array.from(ent.target.children);
+                            children.forEach((c,idx)=>{
+                                setTimeout(()=>c.classList.add('show'), idx*100);
+                            });
+                        }
+                        // 確保只有動畫元素被觀察一次
+                        io.unobserve(ent.target);
+                    }
+                });
+            },{threshold:0.12});
 
+            document.querySelectorAll('.fade-in, .stagger').forEach(el=>io.observe(el));
+        }
 
-<div class="card">
-<img src="災害教具圖片檔名" class="event-img" alt="災害教具製作">
-<h2>📌 災害教具開發｜基礎設計課程（2025）</h2>
-<p>以「依賴科技防災：提升安全還是降低應變能力？」為議題，製作可操作的災害教具；負責模型構想、製作流程、學生操作方式規劃。</p>
-</div>
+        // Dark mode toggle saved (double-click brand)
+        (function(){
+            const key = 'site-dark-mode-v1';
+            const saved = localStorage.getItem(key);
+            if(saved === '1') document.body.classList.add('dark-mode');
+            document.querySelector('.brand').addEventListener('dblclick', ()=>{
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem(key, document.body.classList.contains('dark-mode')? '1':'0');
+            });
+        })();
 
+        // 移除平滑捲動，因為現在是跳轉頁面
+        // 頁面載入時執行動畫
+        window.addEventListener('load', ()=>{ animateBars(); setupScrollReveal(); });
 
-<div class="card">
-<img src="急救教具圖片檔名" class="event-img" alt="急救教具製作">
-<h2>📌 社會責任課程教具設計（2025）</h2>
-<p>設計急救技能情境配對卡牌，負責腳本、任務流程與教學環節設計。</p>
-</div>
-
-
-<div class="card">
-<img src="宿營圖片檔名" class="event-img" alt="宿營活動">
-<h2>📌 宿營「器攝股」器材管理與拍攝（2025）</h2>
-<p>參與「名偵探科基 追企令」活動，負責器材調度、攝影、組內協作。</p>
-</div>
-
-
-<div class="card">
-<img src="VBA專題圖片檔名" class="event-img" alt="資料視覺化專題">
-<h2>📌 VBA + Excel 數據整理專案（2024）</h2>
-<p>整合開放資料、撰寫 VBA 自動化繪製圖表，進行治安資料視覺化。</p>
-</div>
-</div>
-
-
+    </script>
 </body>
+
 </html>

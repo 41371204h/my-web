@@ -1,72 +1,139 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>特質與技能｜李雅郁</title>
-<style>
-body { margin:0; font-family:"Noto Sans TC", sans-serif; background:#F7F3EE; color:#5A463A; }
-header{ background: linear-gradient(135deg,#8B6F5E,#C1A186); color:white; padding:40px; text-align:center; animation:fadein 1s; }
-nav{ background:#D5C1A8; padding:12px; text-align:center; position:sticky; top:0; }
-nav a{ margin:0 20px; color:white; text-decoration:none; font-weight:bold; transition:0.3s; }
-nav a:hover{ text-shadow:0 0 6px white; }
+    <meta charset="utf-8">
+    <title>李雅郁的個人網站 | 技能</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-.container{ max-width:900px; margin:auto; padding:40px 20px; }
-.card{
-background:white; padding:25px; margin-bottom:25px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.1);
-animation:fadein 1s;
-}
-.img-banner{
-width:100%; border-radius:12px; margin-bottom:20px;
-}
-
-
-@keyframes fadein{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;} }
-</style>
+    <style>
+        /* [請將 index.html 的 <style> 內容完整複製貼到此處] */
+    </style>
 </head>
 
-
 <body>
-<header>
-<h1>特質、技能與個人優勢</h1>
-</header>
 
+    <div class="container nav">
+        <div class="brand">LI,YA,YU</div>
+        <nav class="nav-links">
+            <a href="index.html">主頁</a>
+            <a href="skill.html" class="active">特質與技能</a>
+            <a href="experience.html">經歷</a>
+        </nav>
+    </div>
 
-<nav>
-<a href="index.html">主頁</a>
-<a href="skills.html">特質與技能</a>
-<a href="experience.html">經歷</a>
-</nav>
+    <div class="container py-5" id="skills">
+        <section>
+            <h2>個人特質 & 技能</h2>
+            <div class="grid-2">
+                <div class="fade-in">
+                    <h3 style="font-size:1.05rem;margin-bottom:12px">個人特質</h3>
+                    <div class="bars stagger" aria-hidden="false">
+                        <div class="bar fade-in" data-percent="80">
+                            <div class="label"><span class="name">隨和</span><span class="percent">80%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                        <div class="bar fade-in" data-percent="90">
+                            <div class="label"><span class="name">責任心</span><span class="percent">90%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                        <div class="bar fade-in" data-percent="85">
+                            <div class="label"><span class="name">領導能力</span><span class="percent">85%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                        <div class="bar fade-in" data-percent="90">
+                            <div class="label"><span class="name">完美主義</span><span class="percent">90%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="fade-in">
+                    <h3 style="font-size:1.05rem;margin-bottom:12px">技能</h3>
+                    <div class="bars stagger">
+                        <div class="bar fade-in" data-percent="85">
+                            <div class="label"><span class="name">簡報力</span><span class="percent">85%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                        <div class="bar fade-in" data-percent="90">
+                            <div class="label"><span class="name">Excel</span><span class="percent">90%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                        <div class="bar fade-in" data-percent="60">
+                            <div class="label"><span class="name">Python</span><span class="percent">60%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                        <div class="bar fade-in" data-percent="50">
+                            <div class="label"><span class="name">C++</span><span class="percent">50%</span></div>
+                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-<div class="container">
+    <footer>
+        </footer>
 
+   <script>
+        // [將原檔案的 <script> 內容完整複製貼到此處，並修改如下]
 
-<img src="你的技能圖片檔名" class="img-banner" alt="技能圖片">
+        // animate bars (保留，因為 skill.html 會用到)
+        function animateBars(){
+            document.querySelectorAll('.bar').forEach((b,i)=>{
+                const p = b.getAttribute('data-percent') || '0';
+                const fill = b.querySelector('.fill');
+                // staggered by index
+                setTimeout(()=>{
+                    fill.style.transition = 'width 900ms cubic-bezier(.2,.9,.2,1)';
+                    fill.style.width = p + '%';
+                }, 100*i);
+            })
+        }
 
+        // reveal on scroll using IntersectionObserver (保留，用於頁面內的動畫)
+        function setupScrollReveal(){
+            const io = new IntersectionObserver((entries)=>{
+                entries.forEach((ent)=>{
+                    if(ent.isIntersecting){
+                        ent.target.classList.add('show');
+                        // stagger children if container
+                        if(ent.target.classList.contains('stagger')){
+                            const children = Array.from(ent.target.children);
+                            children.forEach((c,idx)=>{
+                                setTimeout(()=>c.classList.add('show'), idx*100);
+                            });
+                        }
+                        // 確保只有動畫元素被觀察一次
+                        io.unobserve(ent.target);
+                    }
+                });
+            },{threshold:0.12});
 
-<div class="card">
-<h2>特質與技能</h2>
-<ul>
-<li>擅長拆解複雜問題（Excel、VBA、HTML/CSS、Arduino）</li>
-<li>邏輯性強、具備系統思考能力</li>
-<li>擅長資料整理、視覺呈現、流程設計</li>
-<li>具有良好文字敘事能力，能統整繁雜內容</li>
-<li>耐心細心，能反覆調整直到結果完善</li>
-</ul>
-</div>
+            document.querySelectorAll('.fade-in, .stagger').forEach(el=>io.observe(el));
+        }
 
+        // Dark mode toggle saved (double-click brand)
+        (function(){
+            const key = 'site-dark-mode-v1';
+            const saved = localStorage.getItem(key);
+            if(saved === '1') document.body.classList.add('dark-mode');
+            document.querySelector('.brand').addEventListener('dblclick', ()=>{
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem(key, document.body.classList.contains('dark-mode')? '1':'0');
+            });
+        })();
 
-<div class="card">
-<h2>個人優勢</h2>
-<ul>
-<li>快速理解陌生領域運作方式並提出改善方案</li>
-<li>協助他人釐清問題與建構具體做法</li>
-<li>能兼具技術視角與教育視角</li>
-<li>高度同理心，能察覺團隊需求與情緒細節</li>
-</ul>
-</div>
-</div>
+        // 移除平滑捲動，因為現在是跳轉頁面
+        // 頁面載入時執行動畫
+        window.addEventListener('load', ()=>{ animateBars(); setupScrollReveal(); });
+    </script>
 </body>
+
 </html>
