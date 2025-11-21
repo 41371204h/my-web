@@ -9,25 +9,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-    <style>
-        /* [所有原本的 CSS 都在這裡，確保三個檔案樣式一致] */
-        /* 由於篇幅限制，請將原檔案的 <style> 內容完整複製貼到此處。 */
-        /* 這裡只放關鍵標記 */
-        :root{
-            --bg: #f7fcfb;
-            /* ... 所有變數 ... */
-        }
-        body.dark-mode{
-            --bg: #041218;
-            /* ... 所有暗黑模式變數 ... */
-        }
-        /* ... 所有樣式 (nav, hero, grid-2, card-adv, contact-grid, @media 等) ... */
-        .fade-in{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
-        .fade-in.show{opacity:1;transform:translateY(0)}
-        .stagger > *{opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease}
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -38,20 +23,20 @@
             <a href="index.html" class="active">主頁</a>
             <a href="skill.html">特質與技能</a>
             <a href="experience.html">經歷</a>
-            </nav>
+        </nav>
     </div>
 
     <div class="container py-5">
-        <div class="hero fade-in">
-            <div class="avatar">
-                <img src="img/S-65912838.jpg" alt="李雅郁">
+        <div class="hero">
+            <div class="avatar fade-in">
+                <img src="img/S-65912838.jpg" alt="李雅郁"> 
             </div>
-            <div>
+            <div class="fade-in">
                 <h1>李雅郁</h1>
                 <div class="school">國立臺灣師範大學 ｜ 科技應用與人力資源發展學系</div>
                 <div style="height:16px"></div>
                 
-                <div class="about-card fade-in">
+                <div class="about-card stagger">
                     <p style="margin:0 0 12px 0;line-height:1.7">嗨～我是個可E可I的人！剛認識我的時候可能會覺得我安安靜靜的，那只是我還在觀察環境😉<br>
                     其實只要熟悉起來，或者有人主動和我搭話，我就會立刻把開關打開、變得很健談！</p>
                     <p style="margin:0 0 12px 0;line-height:1.7">平常喜歡追劇、聽音樂，也超愛看棒球⚾，不管是和朋友一起去球場應援，還是邊吃宵夜邊看轉播，都能讓我覺得超放鬆。</p>
@@ -59,7 +44,7 @@
                     <p style="margin:0;line-height:1.7">如果你也喜歡追劇、聽音樂，或是一起聊球賽、分享生活，那我們一定會聊得很開心！🌿</p>
                 </div>
 
-                <div class="contact-small">
+                <div class="contact-small fade-in">
                     <a href="tel:0905493518"><i class="fa fa-phone"></i> 0905-493-518</a>
                     <a href="mailto:41371204h@gapps.ntnu.edu.tw"><i class="fa fa-envelope"></i> 41371204h@gapps.ntnu.edu.tw</a>
                     <a href="https://www.linkedin.com/in/%E6%9D%8E%E9%9B%85%E9%83%81-%E5%8F%B0%E5%B8%88%E5%A4%A7-41371204h/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
@@ -67,50 +52,48 @@
             </div>
         </div>
     </div>
-    
     <div class="container" id="advantages">
         <section>
-            <h2>個人優勢</h2>
+            <h2 class="fade-in">個人優勢</h2>
             <div class="cards stagger">
-                <div class="card-adv fade-in">
+                <div class="card-adv">
                     <h3>時間管理</h3>
                     <p>妥善分配讀書、活動與休閒時間，能在期限前完成任務。</p>
                 </div>
-                <div class="card-adv fade-in">
+                <div class="card-adv">
                     <h3>團隊合作</h3>
                     <p>擅長分工協調與傾聽，多次在表演與競賽中擔任溝通調停的角色。</p>
                 </div>
-                <div class="card-adv fade-in">
+                <div class="card-adv">
                     <h3>勇於嘗試</h3>
                     <p>遇到新機會會先嘗試看看，從實作中快速學習修正。</p>
                 </div>
-                <div class="card-adv fade-in">
+                <div class="card-adv">
                     <h3>抱持好奇心</h3>
                     <p>面對不懂的事喜歡追根究柢，主動查資料或請教他人。</p>
                 </div>
-                <div class="card-adv fade-in">
+                <div class="card-adv">
                     <h3>熱心負責</h3>
                     <p>時常幫助需要幫助的人，對交付的任務負責到底。</p>
                 </div>
-                <div class="card-adv fade-in">
+                <div class="card-adv">
                     <h3>永不放棄</h3>
                     <p>遇到困難時先拆解目標、逐步突破，直到達成為止。</p>
                 </div>
             </div>
         </section>
     </div>
-
     <div class="container" id="contact">
         <section>
-            <h2>聯絡資訊</h2>
-            <div class="contact-grid">
-                <div class="contact-info fade-in">
+            <h2 class="fade-in">聯絡資訊</h2>
+            <div class="contact-grid stagger">
+                <div class="contact-info">
                     <h3>聯絡方式</h3>
                     <p><strong>電話：</strong><a href="tel:0905493518">0905-493-518</a></p>
                     <p><strong>Email：</strong><a href="mailto:41371204h@gapps.ntnu.edu.tw">41371204h@gapps.ntnu.edu.tw</a></p>
                     <p><strong>LinkedIn：</strong><a href="https://www.linkedin.com/in/%E6%9D%8E%E9%9B%85%E9%83%81-%E5%8F%B0%E5%B8%88%E5%A4%A7-41371204h/" target="_blank">李雅郁（台師大）</a></p>
                 </div>
-                <div class="contact-info fade-in">
+                <div class="contact-info">
                     <h3>寄信給我</h3>
                     <form onsubmit="alert('感謝你的訊息！(示範表單，不會送出)');return false;">
                         <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -126,7 +109,6 @@
             </div>
         </section>
     </div>
-
     <footer>
         <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
@@ -136,59 +118,7 @@
         </div>
     </footer>
 
-    <script>
-        // [將原檔案的 <script> 內容完整複製貼到此處，並修改如下]
-
-        // animate bars (保留，因為 skill.html 會用到)
-        function animateBars(){
-            document.querySelectorAll('.bar').forEach((b,i)=>{
-                const p = b.getAttribute('data-percent') || '0';
-                const fill = b.querySelector('.fill');
-                // staggered by index
-                setTimeout(()=>{
-                    fill.style.transition = 'width 900ms cubic-bezier(.2,.9,.2,1)';
-                    fill.style.width = p + '%';
-                }, 100*i);
-            })
-        }
-
-        // reveal on scroll using IntersectionObserver (保留，用於頁面內的動畫)
-        function setupScrollReveal(){
-            const io = new IntersectionObserver((entries)=>{
-                entries.forEach((ent)=>{
-                    if(ent.isIntersecting){
-                        ent.target.classList.add('show');
-                        // stagger children if container
-                        if(ent.target.classList.contains('stagger')){
-                            const children = Array.from(ent.target.children);
-                            children.forEach((c,idx)=>{
-                                setTimeout(()=>c.classList.add('show'), idx*100);
-                            });
-                        }
-                        // 確保只有動畫元素被觀察一次
-                        io.unobserve(ent.target);
-                    }
-                });
-            },{threshold:0.12});
-
-            document.querySelectorAll('.fade-in, .stagger').forEach(el=>io.observe(el));
-        }
-
-        // Dark mode toggle saved (double-click brand)
-        (function(){
-            const key = 'site-dark-mode-v1';
-            const saved = localStorage.getItem(key);
-            if(saved === '1') document.body.classList.add('dark-mode');
-            document.querySelector('.brand').addEventListener('dblclick', ()=>{
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem(key, document.body.classList.contains('dark-mode')? '1':'0');
-            });
-        })();
-
-        // 移除平滑捲動，因為現在是跳轉頁面
-        // 頁面載入時執行動畫
-        window.addEventListener('load', ()=>{ animateBars(); setupScrollReveal(); });
-    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>

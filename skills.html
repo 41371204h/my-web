@@ -3,17 +3,17 @@
 
 <head>
     <meta charset="utf-8">
-    <title>李雅郁的個人網站 | 技能</title>
+    <title>李雅郁的個人網站 | 特質與技能</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-    <style>
-        /* [請將 index.html 的 <style> 內容完整複製貼到此處] */
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <body class="skill-page">
 </head>
 
 <body>
@@ -29,26 +29,26 @@
 
     <div class="container py-5" id="skills">
         <section>
-            <h2>個人特質 & 技能</h2>
+            <h2 class="fade-in">個人特質 & 技能</h2>
             <div class="grid-2">
                 <div class="fade-in">
                     <h3 style="font-size:1.05rem;margin-bottom:12px">個人特質</h3>
-                    <div class="bars stagger" aria-hidden="false">
-                        <div class="bar fade-in" data-percent="80">
+                    <div class="bars stagger">
+                        <div class="bar" data-percent="80">
                             <div class="label"><span class="name">隨和</span><span class="percent">80%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
-                        <div class="bar fade-in" data-percent="90">
+                        <div class="bar" data-percent="90">
                             <div class="label"><span class="name">責任心</span><span class="percent">90%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
-                        <div class="bar fade-in" data-percent="85">
+                        <div class="bar" data-percent="85">
                             <div class="label"><span class="name">領導能力</span><span class="percent">85%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
-                        <div class="bar fade-in" data-percent="90">
+                        <div class="bar" data-percent="90">
                             <div class="label"><span class="name">完美主義</span><span class="percent">90%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
                     </div>
                 </div>
@@ -56,84 +56,37 @@
                 <div class="fade-in">
                     <h3 style="font-size:1.05rem;margin-bottom:12px">技能</h3>
                     <div class="bars stagger">
-                        <div class="bar fade-in" data-percent="85">
+                        <div class="bar" data-percent="85">
                             <div class="label"><span class="name">簡報力</span><span class="percent">85%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
-                        <div class="bar fade-in" data-percent="90">
+                        <div class="bar" data-percent="90">
                             <div class="label"><span class="name">Excel</span><span class="percent">90%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
-                        <div class="bar fade-in" data-percent="60">
+                        <div class="bar" data-percent="60">
                             <div class="label"><span class="name">Python</span><span class="percent">60%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
-                        <div class="bar fade-in" data-percent="50">
+                        <div class="bar" data-percent="50">
                             <div class="label"><span class="name">C++</span><span class="percent">50%</span></div>
-                            <div class="track"><div class="fill" style="width:0%"></div></div>
+                            <div class="track"><div class="fill"></div></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
-
     <footer>
-        </footer>
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                <div style="font-weight:700">© 2025 李雅郁</div>
+                <div style="color:var(--muted)">想了解更多或合作，歡迎透過 <a href="index.html#contact">聯絡資訊</a> 聯繫我。</div>
+            </div>
+        </div>
+    </footer>
 
-   <script>
-        // [將原檔案的 <script> 內容完整複製貼到此處，並修改如下]
-
-        // animate bars (保留，因為 skill.html 會用到)
-        function animateBars(){
-            document.querySelectorAll('.bar').forEach((b,i)=>{
-                const p = b.getAttribute('data-percent') || '0';
-                const fill = b.querySelector('.fill');
-                // staggered by index
-                setTimeout(()=>{
-                    fill.style.transition = 'width 900ms cubic-bezier(.2,.9,.2,1)';
-                    fill.style.width = p + '%';
-                }, 100*i);
-            })
-        }
-
-        // reveal on scroll using IntersectionObserver (保留，用於頁面內的動畫)
-        function setupScrollReveal(){
-            const io = new IntersectionObserver((entries)=>{
-                entries.forEach((ent)=>{
-                    if(ent.isIntersecting){
-                        ent.target.classList.add('show');
-                        // stagger children if container
-                        if(ent.target.classList.contains('stagger')){
-                            const children = Array.from(ent.target.children);
-                            children.forEach((c,idx)=>{
-                                setTimeout(()=>c.classList.add('show'), idx*100);
-                            });
-                        }
-                        // 確保只有動畫元素被觀察一次
-                        io.unobserve(ent.target);
-                    }
-                });
-            },{threshold:0.12});
-
-            document.querySelectorAll('.fade-in, .stagger').forEach(el=>io.observe(el));
-        }
-
-        // Dark mode toggle saved (double-click brand)
-        (function(){
-            const key = 'site-dark-mode-v1';
-            const saved = localStorage.getItem(key);
-            if(saved === '1') document.body.classList.add('dark-mode');
-            document.querySelector('.brand').addEventListener('dblclick', ()=>{
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem(key, document.body.classList.contains('dark-mode')? '1':'0');
-            });
-        })();
-
-        // 移除平滑捲動，因為現在是跳轉頁面
-        // 頁面載入時執行動畫
-        window.addEventListener('load', ()=>{ animateBars(); setupScrollReveal(); });
-    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
