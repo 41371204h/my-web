@@ -270,30 +270,27 @@ async function fetchBooks(queryTopic) {
             `<p style="color: var(--accent); text-align: center;">載入書籍失敗。(${error.message})</p>`;
     }
 }
-// --- 互動邏輯：處理主題按鈕點擊 (修正版) ---
+// --- 天氣互動彈窗功能 (確保定義在最頂層) ---
+function setupWeatherInteraction() {
+    const actionButton = document.getElementById('weather-action');
+    const weatherInfoSpan = document.getElementById('weather-info');
+    
+    if (actionButton && weatherInfoSpan) {
+        actionButton.addEventListener('click', (e) => {
+            e.preventDefault(); // 阻止連結跳轉
 
-function setupBookTopicInteraction() {
-    const buttons = document.querySelectorAll('.topic-btn');
-    buttons.forEach(button => {
-        // 使用 event.currentTarget 來確保我們引用的是按鈕元素本身，而不是內部文字
-        button.addEventListener('click', (event) => {
-            const clickedButton = event.currentTarget; 
+            const currentInfo = weatherInfoSpan.textContent;
             
-            // 1. 取得選中的主題
-            const selectedTopic = clickedButton.dataset.topic; // 從按鈕元素上獲取 data-topic
-
-            // 2. 更新按鈕的 Active 狀態
-            buttons.forEach(btn => btn.classList.remove('active'));
-            clickedButton.classList.add('active'); // 對按鈕元素操作 active 狀態
-
-            // 3. 呼叫 API 載入新主題書籍
-            if (selectedTopic) {
-                fetchBooks(selectedTopic);
-            } else {
-                console.error("Error: data-topic attribute not found on the clicked element.");
-            }
+            const city = '臺北'; 
+            
+            alert(`
+                天氣資訊：
+                地點：${city}
+                狀態：${currentInfo}
+                資料來源：OpenWeatherMap (即時)
+            `);
         });
-    });
+    }
 }
 
 
