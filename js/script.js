@@ -62,6 +62,7 @@ window.closeModal = function(event) {
     }
 }
 
+
 // --- GitHub API 串接功能 (最新專案) ---
 
 const GITHUB_USERNAME = '41371204h'; // 您的 GitHub 用戶名
@@ -115,7 +116,6 @@ async function fetchGithubRepos() {
             });
             reposContainer.innerHTML = htmlContent;
             
-            // 由於專案是動態載入，我們再次觸發 stagger 動畫
             if (typeof setupScrollReveal === 'function') {
                 document.querySelectorAll('.github-card').forEach(card => card.classList.add('fade-in'));
                 setupScrollReveal(); 
@@ -131,49 +131,51 @@ async function fetchGithubRepos() {
 }
 
 
-// --- Google Books API 串接功能 (強制變化版) ---
+// --- Google Books API 串接功能 (最終穩定強制切換版) ---
 
 const MAX_RESULTS = 4; // 顯示的書籍數量
 
 // 核心功能：根據主題來獲取書籍
 async function fetchBooks(queryTopic) {
-    const API_QUERY = queryTopic || 'Web Development'; 
+    const API_QUERY = queryTopic || 'Web Development';
     
-    // 決定排序方式，增加強制切換的邏輯
+    // 1. 決定排序方式 (使用 startIndex 確保切換)
     let orderBy = 'relevance';
     let startIndex = 0;
     
-    // 透過主題來決定排序和起始索引，以確保每次點擊內容都不同
-    switch (queryTopic) {
+    switch (API_QUERY) {
         case 'Web Development':
-            startIndex = 0; // 預設結果
+            startIndex = 0;
             orderBy = 'relevance';
             break;
         case 'Critical Thinking':
-            startIndex = 4; // 從第 5 本書開始
+            startIndex = 4; // 強制從第 5 本書開始
             orderBy = 'relevance';
             break;
         case 'Time Management':
-            startIndex = 8; // 從第 9 本書開始
+            startIndex = 8; // 強制從第 9 本書開始
             orderBy = 'newest';
             break;
         case 'Career Growth':
-            startIndex = 12; // 從第 13 本書開始
+            startIndex = 12; // 強制從第 13 本書開始
             orderBy = 'newest';
             break;
     }
-    
-    const cacheBuster = Math.random(); 
+
+    // 2. 構造 URL
     const encodedQuery = encodeURIComponent(API_QUERY); 
+    const cacheBuster = Math.random(); 
     
+    // 關鍵：將 startIndex 加入 URL 參數中
     const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&startIndex=${startIndex}&langRestrict=zh-TW&orderBy=${orderBy}&cacheBuster=${cacheBuster}`;
+    
     
     const bookResultsContainer = document.getElementById('book-results');
     const loadingMessage = document.getElementById('loading-message'); 
 
     if (!bookResultsContainer || !loadingMessage) return;
     
-    // 顯示載入狀態
+    // 顯示載入狀態 (先清空舊內容)
     bookResultsContainer.innerHTML = '';
     if (!document.body.contains(loadingMessage)) {
         bookResultsContainer.appendChild(loadingMessage);
@@ -225,21 +227,21 @@ async function fetchBooks(queryTopic) {
 }
 
 
-// --- 互動邏輯：處理主題按鈕點擊 (修正版) ---
+// --- 互動邏輯：處理主題按鈕點擊 (確保獲取正確主題) ---
 
 function setupBookTopicInteraction() {
     const buttons = document.querySelectorAll('.topic-btn');
     buttons.forEach(button => {
-        // 使用 event.currentTarget 來確保我們引用的是按鈕元素本身，而不是內部文字
+        // 使用 event.currentTarget 確保我們引用的是按鈕元素本身
         button.addEventListener('click', (event) => {
             const clickedButton = event.currentTarget; 
             
             // 1. 取得選中的主題
-            const selectedTopic = clickedButton.dataset.topic; // 從按鈕元素上獲取 data-topic
+            const selectedTopic = clickedButton.dataset.topic; 
 
             // 2. 更新按鈕的 Active 狀態
             buttons.forEach(btn => btn.classList.remove('active'));
-            clickedButton.classList.add('active'); // 對按鈕元素操作 active 狀態
+            clickedButton.classList.add('active'); 
 
             // 3. 呼叫 API 載入新主題書籍
             if (selectedTopic) {
@@ -325,6 +327,7 @@ function setupDarkModeToggle(){
 
 
 // --- 頁面啟動點 (最終統一版，修復 API 互動問題) ---
+// 移除了衝突的 DOMContentLoaded，只保留 window.addEventListener('load')
 window.addEventListener('load', async () => {
     // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
@@ -333,17 +336,16 @@ window.addEventListener('load', async () => {
     // 2. 技能頁面專屬功能
     if(document.body.classList.contains('skill-page')) {
         animateBars();
-        // ★★★ 新增：載入 GitHub 專案 ★★★
-        fetchGithubRepos(); 
+        fetchGithubRepos(); // ★★★ 載入 GitHub 專案 ★★★
     }
 
     // 3. 書單互動功能 (只在主頁 index.html 執行)
     const topicButtons = document.querySelector('.topic-buttons');
     if (topicButtons) {
-        // A. 初始載入預設書籍 ('Web Development')，並等待 API 完成。
+        // A. 初始載入預設書籍 ('Web Development')
         await fetchBooks('Web Development'); 
 
-        // B. 設置互動功能：書籍載入成功後，按鈕點擊事件啟動。
+        // B. 設置互動功能 (確保按鈕點擊能切換書單)
         setupBookTopicInteraction(); 
     }
 });
