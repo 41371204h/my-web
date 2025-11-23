@@ -62,45 +62,135 @@ window.closeModal = function(event) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    setupBookTopicInteraction();
-    fetchBooks("Web Development");
-});
+// --- GitHub API 串接功能 (最新專案) ---
+
+const GITHUB_USERNAME = '41371204h'; // 您的 GitHub 用戶名
+
+async function fetchGithubRepos() {
+    const url = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=3`;
+    const reposContainer = document.getElementById('github-repos');
+    const loadingMessage = document.getElementById('github-loading');
+
+    if (!reposContainer || !loadingMessage) return;
+
+    // 顯示載入狀態
+    reposContainer.innerHTML = '';
+    reposContainer.appendChild(loadingMessage);
+    loadingMessage.style.display = 'block';
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`GitHub API error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // 隱藏載入訊息
+        loadingMessage.style.display = 'none';
+
+        if (data && data.length > 0) {
+            let htmlContent = '';
+            data.forEach(repo => {
+                const name = repo.name;
+                const description = repo.description || '無專案描述';
+                const url = repo.html_url;
+                const language = repo.language || 'N/A';
+                // 格式化日期：YYYY-MM-DD
+                const updated = new Date(repo.updated_at).toLocaleDateString('zh-TW', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+
+                htmlContent += `
+                    <div class="github-card fade-in">
+                        <a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>
+                        <p class="description">${description}</p>
+                        <div class="github-info">
+                            <span class="language">${language}</span>
+                            <span>更新於 ${updated}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            reposContainer.innerHTML = htmlContent;
+            
+            // 由於專案是動態載入，我們再次觸發 stagger 動畫
+            if (typeof setupScrollReveal === 'function') {
+                document.querySelectorAll('.github-card').forEach(card => card.classList.add('fade-in'));
+                setupScrollReveal(); 
+            }
+        } else {
+            reposContainer.innerHTML = '<p style="color: var(--muted); text-align: center;">找不到公開的專案。</p>';
+        }
+
+    } catch (error) {
+        console.error("Fetch GitHub Repos Error:", error);
+        reposContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入 GitHub 專案失敗，請稍後再試。</p>';
+    }
+}
+
 
 // --- Google Books API 串接功能 (強制變化版) ---
 
 const MAX_RESULTS = 4; // 顯示的書籍數量
 
+// 核心功能：根據主題來獲取書籍
 async function fetchBooks(queryTopic) {
     const API_QUERY = queryTopic || 'Web Development'; 
-    let orderBy = (API_QUERY.includes('Growth') || API_QUERY.includes('Management'))
-        ? 'newest'
-        : 'relevance';
-
-    const cacheBuster = Math.random();
-    const encodedQuery = encodeURIComponent(API_QUERY);
-
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&langRestrict=zh-TW&orderBy=${orderBy}&cacheBuster=${cacheBuster}`;
-
+    
+    // 決定排序方式，增加強制切換的邏輯
+    let orderBy = 'relevance';
+    let startIndex = 0;
+    
+    // 透過主題來決定排序和起始索引，以確保每次點擊內容都不同
+    switch (queryTopic) {
+        case 'Web Development':
+            startIndex = 0; // 預設結果
+            orderBy = 'relevance';
+            break;
+        case 'Critical Thinking':
+            startIndex = 4; // 從第 5 本書開始
+            orderBy = 'relevance';
+            break;
+        case 'Time Management':
+            startIndex = 8; // 從第 9 本書開始
+            orderBy = 'newest';
+            break;
+        case 'Career Growth':
+            startIndex = 12; // 從第 13 本書開始
+            orderBy = 'newest';
+            break;
+    }
+    
+    const cacheBuster = Math.random(); 
+    const encodedQuery = encodeURIComponent(API_QUERY); 
+    
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&startIndex=${startIndex}&langRestrict=zh-TW&orderBy=${orderBy}&cacheBuster=${cacheBuster}`;
+    
     const bookResultsContainer = document.getElementById('book-results');
-    const loadingMessage = document.getElementById('loading-message');
+    const loadingMessage = document.getElementById('loading-message'); 
 
-    // 🚀 **強制清空舊書單（最關鍵修正！）**
+    if (!bookResultsContainer || !loadingMessage) return;
+    
+    // 顯示載入狀態
     bookResultsContainer.innerHTML = '';
-
-    // 🚀 確保 loadingMessage 在容器裡，不使用 body.contains
-    if (loadingMessage && loadingMessage.parentNode !== bookResultsContainer) {
+    if (!document.body.contains(loadingMessage)) {
         bookResultsContainer.appendChild(loadingMessage);
     }
-
-    if (loadingMessage) loadingMessage.style.display = 'block';
+    loadingMessage.style.display = 'block';
 
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+        
+        if (!response.ok) {
+             throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
-        if (loadingMessage) loadingMessage.style.display = 'none';
+
+        // 隱藏載入訊息
+        loadingMessage.style.display = 'none';
 
         if (data.items && data.items.length > 0) {
             let htmlContent = '';
@@ -109,13 +199,10 @@ async function fetchBooks(queryTopic) {
                 if (info.title && info.imageLinks) {
                     const title = info.title;
                     const authors = info.authors ? info.authors.join(', ') : '未知作者';
-                    const thumbnailUrl =
-                        info.imageLinks.thumbnail ||
-                        info.imageLinks.smallThumbnail ||
-                        'placeholder.jpg';
+                    const thumbnailUrl = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || 'placeholder.jpg'; 
 
                     htmlContent += `
-                        <div class="book-card fade-in">
+                        <div class="book-card">
                             <img src="${thumbnailUrl}" alt="${title} 封面">
                             <h4>${title}</h4>
                             <p>${authors}</p>
@@ -123,20 +210,20 @@ async function fetchBooks(queryTopic) {
                     `;
                 }
             });
-
             bookResultsContainer.innerHTML = htmlContent;
-            setupScrollReveal();
+            if (typeof setupScrollReveal === 'function') {
+                setupScrollReveal(); 
+            }
         } else {
-            bookResultsContainer.innerHTML =
-                `<p style="color: var(--muted); text-align: center;">抱歉，找不到符合「${API_QUERY}」主題的書籍。</p>`;
+            bookResultsContainer.innerHTML = `<p style="color: var(--muted); text-align: center;">抱歉，找不到符合「${API_QUERY}」主題的書籍。</p>`;
         }
 
     } catch (error) {
         console.error("Fetch Books Error:", error);
-        bookResultsContainer.innerHTML =
-            `<p style="color: var(--accent); text-align: center;">載入書籍失敗。（${API_QUERY}）</p>`;
+        bookResultsContainer.innerHTML = `<p style="color: var(--accent); text-align: center;">載入書籍失敗，請稍後再試。(${API_QUERY})</p>`;
     }
 }
+
 
 // --- 互動邏輯：處理主題按鈕點擊 (修正版) ---
 
@@ -145,7 +232,6 @@ function setupBookTopicInteraction() {
     buttons.forEach(button => {
         // 使用 event.currentTarget 來確保我們引用的是按鈕元素本身，而不是內部文字
         button.addEventListener('click', (event) => {
-            // 使用 event.currentTarget 來引用到事件綁定所在的按鈕
             const clickedButton = event.currentTarget; 
             
             // 1. 取得選中的主題
@@ -156,7 +242,6 @@ function setupBookTopicInteraction() {
             clickedButton.classList.add('active'); // 對按鈕元素操作 active 狀態
 
             // 3. 呼叫 API 載入新主題書籍
-            // 檢查是否成功獲取主題，如果獲取失敗 (可能是 undefined)，則不呼叫 fetchBooks
             if (selectedTopic) {
                 fetchBooks(selectedTopic);
             } else {
@@ -165,6 +250,7 @@ function setupBookTopicInteraction() {
         });
     });
 }
+
 
 // --- 技能長條圖動畫 (只在 skills.html 執行) ---
 function animateBars(){
@@ -247,6 +333,8 @@ window.addEventListener('load', async () => {
     // 2. 技能頁面專屬功能
     if(document.body.classList.contains('skill-page')) {
         animateBars();
+        // ★★★ 新增：載入 GitHub 專案 ★★★
+        fetchGithubRepos(); 
     }
 
     // 3. 書單互動功能 (只在主頁 index.html 執行)

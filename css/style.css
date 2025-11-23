@@ -317,3 +317,60 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
     border-color: var(--primary);
     font-weight: 600;
 }
+/* --- GitHub 專案樣式 --- */
+#github-repos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; 
+}
+
+.github-card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    width: 320px; /* 寬度略寬，以便顯示更多資訊 */
+    height: auto;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 5px solid var(--primary); /* 左側強調色 */
+    text-align: left;
+}
+
+.github-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.github-card a {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.github-card p.description {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 15px;
+    height: 40px; /* 固定描述高度 */
+    overflow: hidden;
+}
+
+.github-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 10px;
+}
+
+.language {
+    color: var(--text);
+    font-weight: 600;
+}
