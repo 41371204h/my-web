@@ -195,41 +195,61 @@ async function fetchGithubRepos() {
     }
 }
 
-// --- Google Books API 串接功能 (最終穩定版) ---
+// --- Google Books API 串接功能 (最終穩定版 - 強制無快取) ---
 const MAX_RESULTS = 4; // 顯示的書籍數量
 
 async function fetchBooks(queryTopic) {
     const API_QUERY = queryTopic || 'Web Development'; 
-    let orderBy = (API_QUERY.includes('Growth') || API_QUERY.includes('Management'))
-        ? 'newest'
-        : 'relevance';
+    
+    // 決定排序方式和起始索引 (保持邏輯不變)
+    let orderBy = 'relevance';
+    let startIndex = 0;
+    
+    switch (API_QUERY) {
+        case 'Web Development':
+            startIndex = 0;
+            break;
+        case 'Critical Thinking':
+            startIndex = 4; 
+            break;
+        case 'Time Management':
+            startIndex = 8; 
+            orderBy = 'newest';
+            break;
+        case 'Career Growth':
+            startIndex = 12; 
+            orderBy = 'newest';
+            break;
+    }
 
-    // 確保每次請求都是新的，避免瀏覽器快取問題
+    // 構造 URL
     const encodedQuery = encodeURIComponent(API_QUERY);
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&langRestrict=zh-TW&orderBy=${orderBy}`;
-
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&startIndex=${startIndex}&langRestrict=zh-TW&orderBy=${orderBy}`;
+    
     const bookResultsContainer = document.getElementById('book-results');
-    const loadingMessage = document.getElementById('loading-message');
+    const loadingMessage = document.getElementById('loading-message'); 
 
-    // 確保 DOM 元素存在
     if (!bookResultsContainer || !loadingMessage) return;
-
-    // 清空舊書單並顯示載入訊息
+    
+    // 顯示載入狀態
     bookResultsContainer.innerHTML = '';
-    bookResultsContainer.appendChild(loadingMessage); 
+    if (!document.body.contains(loadingMessage)) {
+        bookResultsContainer.appendChild(loadingMessage);
+    }
     loadingMessage.style.display = 'block';
 
     try {
-        const response = await fetch(url);
+        // ★★★ 關鍵修正：在 fetch 請求中加入 cache: 'no-cache' ★★★
+        const response = await fetch(url, {
+            cache: 'no-cache' 
+        });
         
-        // 檢查 HTTP 狀態碼
         if (!response.ok) {
              throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
         }
 
         const data = await response.json();
         
-        // ★★★ 成功獲取數據後，隱藏載入訊息 ★★★
         loadingMessage.style.display = 'none';
 
         if (data.items && data.items.length > 0) {
@@ -246,7 +266,7 @@ async function fetchBooks(queryTopic) {
                         'placeholder.jpg';
 
                     htmlContent += `
-                        <div class="book-card fade-in">
+                        <div class="book-card">
                             <img src="${thumbnailUrl}" alt="${title} 封面">
                             <h4>${title}</h4>
                             <p>${authors}</p>
@@ -256,14 +276,15 @@ async function fetchBooks(queryTopic) {
             });
 
             bookResultsContainer.innerHTML = htmlContent;
-            setupScrollReveal();
+            if (typeof setupScrollReveal === 'function') {
+                setupScrollReveal();
+            }
         } else {
             bookResultsContainer.innerHTML =
                 `<p style="color: var(--muted); text-align: center;">抱歉，找不到符合「${API_QUERY}」主題的書籍。</p>`;
         }
 
     } catch (error) {
-        // ★★★ 發生錯誤時，隱藏載入訊息並顯示錯誤提示 ★★★
         if (loadingMessage) loadingMessage.style.display = 'none';
         console.error("Fetch Books Error:", error);
         bookResultsContainer.innerHTML =
