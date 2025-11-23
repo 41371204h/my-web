@@ -369,15 +369,14 @@ function setupDarkModeToggle(){
 }
 
 
-// --- 頁面啟動點 (最終統一版，包含所有頁面功能) ---
+// --- 頁面啟動點 (最終修正版 - 確保功能只在對應頁面啟動) ---
 window.addEventListener('load', async () => {
     // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
     setupScrollReveal(); 
     
-    // ★★★ 天氣功能：在所有頁面執行 ★★★
+    // ★★★ 天氣 API 數據載入：在所有頁面執行 ★★★
     fetchCurrentWeather();
-    setupWeatherInteraction();
     
     // 2. 技能頁面專屬功能
     if(document.body.classList.contains('skill-page')) {
@@ -385,10 +384,12 @@ window.addEventListener('load', async () => {
         fetchGithubRepos(); 
     }
 
-    // 3. 書單互動功能 (只在主頁 index.html 執行)
+    // 3. 主頁功能 (書單互動 & 天氣按鈕)
     const topicButtons = document.querySelector('.topic-buttons');
     if (topicButtons) {
-        // 載入書籍功能
+        // 只有主頁有書單按鈕，所以我們只在這裡啟動書單和天氣互動功能
+        setupWeatherInteraction(); // ★★★ 隔離後，只在主頁呼叫這個函式 ★★★
+        
         await fetchBooks('Web Development'); 
         setupBookTopicInteraction(); 
     }
