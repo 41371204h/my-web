@@ -375,21 +375,24 @@ window.addEventListener('load', async () => {
     setupDarkModeToggle(); 
     setupScrollReveal(); 
     
-    // ★★★ 天氣 API 數據載入：在所有頁面執行 ★★★
+    // 2. 天氣 API 數據載入：在所有頁面執行
     fetchCurrentWeather();
     
-    // 2. 技能頁面專屬功能
+    // 3. 技能頁面專屬功能
     if(document.body.classList.contains('skill-page')) {
         animateBars();
         fetchGithubRepos(); 
     }
 
-    // 3. 主頁功能 (書單互動 & 天氣按鈕)
-    const topicButtons = document.querySelector('.topic-buttons');
-    if (topicButtons) {
-        // 只有主頁有書單按鈕，所以我們只在這裡啟動書單和天氣互動功能
-        setupWeatherInteraction(); // ★★★ 隔離後，只在主頁呼叫這個函式 ★★★
+    // 4. 主頁功能 (書單互動 & 天氣按鈕)
+    // 檢查是否有主頁的獨有元素 (例如 Hero 區塊的 avatar)
+    const heroAvatar = document.querySelector('.hero .avatar');
+    if (heroAvatar) { // 假設 index.html 是唯一有 .hero .avatar 的頁面
         
+        // ★★★ 在此處確保天氣互動功能被呼叫 ★★★
+        setupWeatherInteraction(); 
+
+        // 載入書籍功能
         await fetchBooks('Web Development'); 
         setupBookTopicInteraction(); 
     }
