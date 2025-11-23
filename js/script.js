@@ -200,60 +200,37 @@ const MAX_RESULTS = 4; // 顯示的書籍數量
 
 async function fetchBooks(queryTopic) {
     const API_QUERY = queryTopic || 'Web Development'; 
-    
-    // ★★★ 關鍵修正：確保排序和起始索引的邏輯在這裡 ★★★
-    let orderBy = 'relevance';
-    let startIndex = 0;
-    
-    switch (API_QUERY) {
-        case 'Web Development':
-            startIndex = 0;
-            break;
-        case 'Critical Thinking':
-            startIndex = 4; 
-            break;
-        case 'Time Management':
-            startIndex = 8; 
-            orderBy = 'newest';
-            break;
-        case 'Career Growth':
-            startIndex = 12; 
-            orderBy = 'newest';
-            break;
-    }
+    let orderBy = (API_QUERY.includes('Growth') || API_QUERY.includes('Management'))
+        ? 'newest'
+        : 'relevance';
 
-    // 構造 URL
+    const cacheBuster = Math.random();
     const encodedQuery = encodeURIComponent(API_QUERY);
-    // 確保 URL 中包含 startIndex
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&startIndex=${startIndex}&langRestrict=zh-TW&orderBy=${orderBy}`;
-    
-    const bookResultsContainer = document.getElementById('book-results');
-    const loadingMessage = document.getElementById('loading-message'); 
 
-    if (!bookResultsContainer || !loadingMessage) return;
-    
-    // 顯示載入狀態
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&langRestrict=zh-TW&orderBy=${orderBy}&cacheBuster=${cacheBuster}`;
+
+    const bookResultsContainer = document.getElementById('book-results');
+    const loadingMessage = document.getElementById('loading-message');
+
+    // 🚀 **強制清空舊書單（最關鍵修正！）**
     bookResultsContainer.innerHTML = '';
-    if (!document.body.contains(loadingMessage)) {
+
+    // 🚀 確保 loadingMessage 在容器裡，不使用 body.contains
+    if (loadingMessage && loadingMessage.parentNode !== bookResultsContainer) {
         bookResultsContainer.appendChild(loadingMessage);
     }
-    loadingMessage.style.display = 'block';
+
+    if (loadingMessage) loadingMessage.style.display = 'block';
 
     try {
-        // 關鍵修正：在 fetch 請求中加入 cache: 'no-cache'
-        const response = await fetch(url, { cache: 'no-cache' });
-        
-        if (!response.ok) {
-             throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
-        }
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
-        
-        loadingMessage.style.display = 'none';
+        if (loadingMessage) loadingMessage.style.display = 'none';
 
         if (data.items && data.items.length > 0) {
             let htmlContent = '';
-            // ... (書籍卡片 HTML 產生邏輯保持不變) ...
             data.items.forEach(item => {
                 const info = item.volumeInfo;
                 if (info.title && info.imageLinks) {
@@ -265,7 +242,7 @@ async function fetchBooks(queryTopic) {
                         'placeholder.jpg';
 
                     htmlContent += `
-                        <div class="book-card">
+                        <div class="book-card fade-in">
                             <img src="${thumbnailUrl}" alt="${title} 封面">
                             <h4>${title}</h4>
                             <p>${authors}</p>
@@ -275,21 +252,19 @@ async function fetchBooks(queryTopic) {
             });
 
             bookResultsContainer.innerHTML = htmlContent;
-            if (typeof setupScrollReveal === 'function') {
-                setupScrollReveal();
-            }
+            setupScrollReveal();
         } else {
             bookResultsContainer.innerHTML =
                 `<p style="color: var(--muted); text-align: center;">抱歉，找不到符合「${API_QUERY}」主題的書籍。</p>`;
         }
 
     } catch (error) {
-        if (loadingMessage) loadingMessage.style.display = 'none';
         console.error("Fetch Books Error:", error);
         bookResultsContainer.innerHTML =
-            `<p style="color: var(--accent); text-align: center;">載入書籍失敗。(${error.message})</p>`;
+            `<p style="color: var(--accent); text-align: center;">載入書籍失敗。（${API_QUERY}）</p>`;
     }
 }
+
 
 // --- 互動邏輯：處理主題按鈕點擊 (確保獲取正確主題) ---
 function setupBookTopicInteraction() {
