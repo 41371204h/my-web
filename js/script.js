@@ -1,22 +1,55 @@
-// --- OpenWeatherMap 配置 ---
-const WEATHER_API_KEY = "83b7835fd502cff5c1fe69ce70a7fe7e"; // ★★★ 請替換成您的 Key ★★★
-const CITY_LAT = 25.033; 
-const CITY_LON = 121.565; 
+// --- OpenWeatherMap API 函數 (最終版 - 主頁即時查詢) ---
+const WEATHER_API_KEY = "83b7835fd502cff5c1fe69ce70a7fe7e"; // ★★★ 替換成您的 Key ★★★
+const CITY_LAT = 25.033; // 臺北緯度
+const CITY_LON = 121.565; // 臺北經度
 
-// 將活動日期轉換為 Unix Timestamp (秒)
-// 科技營 (大一, 假設 2022/08/15)
-const CAMP_TS = 1660500000; 
-// 科技之夜 (大一, 假設 2022/12/10)
-const NIGHT_TS = 1670640000;
-// 宿營 (大二, 假設 2023/10/20)
-const SUPPER_CAMP_TS = 1697800000; 
+async function fetchCurrentWeather() {
+    const weatherDisplay = document.getElementById('weather-info');
+    if (!weatherDisplay) return;
 
+    if (WEATHER_API_KEY === "83b7835fd502cff5c1fe69ce70a7fe7e") {
+        weatherDisplay.innerHTML = "API Key 錯誤";
+        return;
+    }
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${CITY_LAT}&lon=${CITY_LON}&units=metric&appid=${WEATHER_API_KEY}`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.cod !== 200) {
+            weatherDisplay.innerHTML = `天氣資料失敗 (${data.message})`;
+            return;
+        }
+
+        const temp = Math.round(data.main.temp);
+        const description = data.weather[0].description;
+        const iconCode = data.weather[0].icon;
+
+        // 顯示天氣資訊和圖標
+        weatherDisplay.innerHTML = `${temp}°C / ${description}`;
+        
+        // 可選：替換圖標為更準確的圖標 (需要額外 CSS/圖片支持)
+        const iconElement = document.querySelector('#weather-display i');
+        if(iconElement){
+             // 簡易圖標替換：白天/夜晚
+             if (iconCode.includes('n')) {
+                 iconElement.className = 'fa fa-moon'; // 夜晚圖標
+             } else {
+                 iconElement.className = 'fa fa-sun'; // 白天圖標
+             }
+        }
+
+    } catch (error) {
+        console.error("Weather API Request Error:", error);
+        weatherDisplay.innerHTML = "天氣 API 請求失敗";
+    }
+}
 // --- Modal Content Data (用於經歷頁面的彈窗) ---
-// ★★★ 變數只定義一次，並包含時間戳 ★★★
 const experienceData = {
     camp: {
         title: "科技營 活動股 (大一)",
-        timestamp: CAMP_TS, // <-- 整合時間戳
         details: `
             <p><strong>擔任活動股主要負責活動的構思、流程設計與執行，從中學習到：</strong></p>
             <ul>
@@ -28,7 +61,6 @@ const experienceData = {
     },
     night: {
         title: "科技之夜 公關股 (大一)",
-        timestamp: NIGHT_TS, // <-- 整合時間戳
         details: `
             <p><strong>作為公關股成員，主要職責是建立外部聯繫，為活動爭取資源：</strong></p>
             <ul>
@@ -40,7 +72,6 @@ const experienceData = {
     },
     supper_camp: {
         title: "宿營 器材設備股 (大二)",
-        timestamp: SUPPER_CAMP_TS, // <-- 整合時間戳
         details: `
             <p><strong>擔任器設股，負責活動背後的硬體支持，確保設備萬無一失：</strong></p>
             <ul>
@@ -52,42 +83,8 @@ const experienceData = {
     }
 };
 
-// --- OpenWeatherMap API 函數 (切換為即時查詢) ---
-
-// 由於歷史查詢受限於訂閱方案，我們改為查詢即時天氣來證明 API 串接能力。
-async function fetchCurrentWeather() {
-    if (!WEATHER_API_KEY || WEATHER_API_KEY === "YOUR_OPENWEATHERMAP_API_KEY") {
-        return "<li>**天氣資訊：** API Key 缺失或無效，無法獲取天氣。</li>";
-    }
-
-    // 使用即時天氣 API (Current Weather Data)
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${CITY_LAT}&lon=${CITY_LON}&units=metric&appid=${WEATHER_API_KEY}`;
-    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        // 檢查 API 是否返回成功的狀態碼
-        if (data.cod && data.cod !== 200) {
-            console.error("Weather API Error:", data.message);
-            return `<li>天氣資訊： 數據獲取失敗 (${data.message})。</li>`;
-        }
-
-        const temp = Math.round(data.main.temp);
-        const description = data.weather[0].description;
-        const location = data.name;
-
-        // 我們將展示當前的即時天氣，並註明地點，以示區別。
-        return `<li>當前環境 (API 數據)： ${location}，即時氣溫 ${temp}°C，${description}。</li>`;
-
-    } catch (error) {
-        console.error("Weather API Request Error:", error);
-        return "<li>天氣資訊： API 請求失敗。</li>";
-    }
-}
-// --- Modal Functionality (修正版 - 整合天氣 API) ---
-// 打開 Modal 視窗 (修正版 - 整合即時天氣 API)
-window.openModal = async function(key) { 
+// 打開 Modal 視窗 (恢復為純展示內容，不再呼叫天氣 API)
+window.openModal = function(key) { 
     const data = experienceData[key];
     const modal = document.getElementById('experienceModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -96,24 +93,11 @@ window.openModal = async function(key) {
     if (data && modal) {
         // 顯示基本內容
         modalTitle.innerHTML = data.title;
-        modalBody.innerHTML = `載入環境資訊中...`; // 顯示載入中
+        // 將 details 內容包裝在 ul 中，保持排版一致性
+        modalBody.innerHTML = `<p>${data.details}</p>`; 
 
         // 啟動彈窗
         modal.classList.add('open');
-
-        // ★ 關鍵修改：呼叫即時天氣 API
-        const weatherHtml = await fetchCurrentWeather();
-
-        // 將 API 數據插入到 details 內容的頂部
-        // 注意：由於現在是即時數據，我們不需要傳入 timestamp
-        const fullDetails = `
-            <ul>
-                ${weatherHtml}
-            </ul>
-            ${data.details}
-        `;
-
-        modalBody.innerHTML = fullDetails;
     }
 }
 
@@ -379,40 +363,15 @@ window.addEventListener('load', async () => {
         // ★★★ 新增：載入 GitHub 專案 ★★★
         fetchGithubRepos();
     }
-
-    // 3. 書單互動功能 (只在主頁 index.html 執行)
+    // ... (程式碼略) ...
+    // 3. 主頁功能 (書單互動 & 即時天氣)
     const topicButtons = document.querySelector('.topic-buttons');
     if (topicButtons) {
-        // A. 初始載入預設書籍 ('Web Development')，並等待 API 完成。
+        // 載入即時天氣 (不需等待)
+        fetchCurrentWeather();
+        
+        // 載入書籍功能
         await fetchBooks('Web Development'); 
-
-        // B. 設置互動功能：書籍載入成功後，按鈕點擊事件啟動。
         setupBookTopicInteraction(); 
     }
 });
-async function fetchHistoricalWeather(timestamp) {
-    if (!WEATHER_API_KEY || WEATHER_API_KEY === "YOUR_OPENWEATHERMAP_API_KEY") {
-        return "<li>**天氣資訊：** API Key 缺失，無法獲取當日天氣。</li>";
-    }
-
-    const url = `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${CITY_LAT}&lon=${CITY_LON}&dt=${timestamp}&units=metric&appid=${WEATHER_API_KEY}`;
-    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.data && data.data.length > 0) {
-            const hourlyData = data.data[12] || data.data[0]; // 取中間或開頭時間點的數據
-            const temp = Math.round(hourlyData.temp);
-            const description = hourlyData.weather[0].description;
-            const date = new Date(timestamp * 1000).toLocaleDateString();
-
-            return `<li>**當日氣候 (API 數據)：** ${date}，${temp}°C，${description}。</li>`;
-        }
-        return "<li>**天氣資訊：** 抱歉，歷史天氣數據查詢失敗。</li>";
-
-    } catch (error) {
-        console.error("Weather API Error:", error);
-        return "<li>**天氣資訊：** API 請求失敗。</li>";
-    }
-}
