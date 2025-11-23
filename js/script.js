@@ -1,7 +1,22 @@
+// --- OpenWeatherMap 配置 ---
+const WEATHER_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"; // ★★★ 請替換成您的 Key ★★★
+const CITY_LAT = 25.033; 
+const CITY_LON = 121.565; 
+
+// 將活動日期轉換為 Unix Timestamp (秒)
+// 科技營 (大一, 假設 2022/08/15)
+const CAMP_TS = 1660500000; 
+// 科技之夜 (大一, 假設 2022/12/10)
+const NIGHT_TS = 1670640000;
+// 宿營 (大二, 假設 2023/10/20)
+const SUPPER_CAMP_TS = 1697800000; 
+
 // --- Modal Content Data (用於經歷頁面的彈窗) ---
+// ★★★ 變數只定義一次，並包含時間戳 ★★★
 const experienceData = {
     camp: {
         title: "科技營 活動股 (大一)",
+        timestamp: CAMP_TS, // <-- 整合時間戳
         details: `
             <p><strong>擔任活動股主要負責活動的構思、流程設計與執行，從中學習到：</strong></p>
             <ul>
@@ -13,6 +28,7 @@ const experienceData = {
     },
     night: {
         title: "科技之夜 公關股 (大一)",
+        timestamp: NIGHT_TS, // <-- 整合時間戳
         details: `
             <p><strong>作為公關股成員，主要職責是建立外部聯繫，為活動爭取資源：</strong></p>
             <ul>
@@ -24,6 +40,7 @@ const experienceData = {
     },
     supper_camp: {
         title: "宿營 器材設備股 (大二)",
+        timestamp: SUPPER_CAMP_TS, // <-- 整合時間戳
         details: `
             <p><strong>擔任器設股，負責活動背後的硬體支持，確保設備萬無一失：</strong></p>
             <ul>
@@ -35,21 +52,67 @@ const experienceData = {
     }
 };
 
-// --- Modal Functionality ---
+// --- OpenWeatherMap API 函數 ---
+async function fetchHistoricalWeather(timestamp) {
+    if (!WEATHER_API_KEY || WEATHER_API_KEY === "YOUR_OPENWEATHERMAP_API_KEY") {
+        return "<li>**天氣資訊：** API Key 缺失，無法獲取當日天氣。</li>";
+    }
 
-// 打開 Modal 視窗
-window.openModal = function(key) {
+    const url = `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${CITY_LAT}&lon=${CITY_LON}&dt=${timestamp}&units=metric&appid=${WEATHER_API_KEY}`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.data && data.data.length > 0) {
+            const hourlyData = data.data[12] || data.data[0]; // 取中間或開頭時間點的數據
+            const temp = Math.round(hourlyData.temp);
+            const description = hourlyData.weather[0].description;
+            const date = new Date(timestamp * 1000).toLocaleDateString();
+
+            return `<li>**當日氣候 (API 數據)：** ${date}，${temp}°C，${description}。</li>`;
+        }
+        return "<li>**天氣資訊：** 抱歉，歷史天氣數據查詢失敗。</li>";
+
+    } catch (error) {
+        console.error("Weather API Error:", error);
+        return "<li>**天氣資訊：** API 請求失敗。</li>";
+    }
+}
+
+
+// --- Modal Functionality (修正版 - 整合天氣 API) ---
+// 請確保您的 script.js 中 openModal 函數被替換為這個版本
+window.openModal = async function(key) { 
     const data = experienceData[key];
     const modal = document.getElementById('experienceModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
 
     if (data && modal) {
+        // 顯示基本內容
         modalTitle.innerHTML = data.title;
-        modalBody.innerHTML = data.details;
+        modalBody.innerHTML = `載入環境資訊中...`; // 顯示載入中
+
+        // 啟動彈窗
         modal.classList.add('open');
+
+        // 呼叫天氣 API 並等待結果
+        const weatherHtml = await fetchHistoricalWeather(data.timestamp);
+
+        // 將 API 數據插入到 details 內容的頂部
+        const fullDetails = `
+            <ul>
+                ${weatherHtml}
+            </ul>
+            ${data.details}
+        `;
+
+        modalBody.innerHTML = fullDetails;
     }
 }
+
+// 關閉 Modal 視窗... (後續函數請保持不變)
 
 // 關閉 Modal 視窗
 window.closeModal = function(event) {
@@ -324,3 +387,29 @@ window.addEventListener('load', async () => {
         setupBookTopicInteraction(); 
     }
 });
+async function fetchHistoricalWeather(timestamp) {
+    if (!WEATHER_API_KEY || WEATHER_API_KEY === "YOUR_OPENWEATHERMAP_API_KEY") {
+        return "<li>**天氣資訊：** API Key 缺失，無法獲取當日天氣。</li>";
+    }
+
+    const url = `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${CITY_LAT}&lon=${CITY_LON}&dt=${timestamp}&units=metric&appid=${WEATHER_API_KEY}`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.data && data.data.length > 0) {
+            const hourlyData = data.data[12] || data.data[0]; // 取中間或開頭時間點的數據
+            const temp = Math.round(hourlyData.temp);
+            const description = hourlyData.weather[0].description;
+            const date = new Date(timestamp * 1000).toLocaleDateString();
+
+            return `<li>**當日氣候 (API 數據)：** ${date}，${temp}°C，${description}。</li>`;
+        }
+        return "<li>**天氣資訊：** 抱歉，歷史天氣數據查詢失敗。</li>";
+
+    } catch (error) {
+        console.error("Weather API Error:", error);
+        return "<li>**天氣資訊：** API 請求失敗。</li>";
+    }
+}
