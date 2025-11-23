@@ -36,8 +36,6 @@ const experienceData = {
 };
 
 // --- Modal Functionality ---
-
-// 打開 Modal 視窗
 window.openModal = function(key) {
     const data = experienceData[key];
     const modal = document.getElementById('experienceModal');
@@ -49,23 +47,19 @@ window.openModal = function(key) {
         modalBody.innerHTML = data.details;
         modal.classList.add('open');
     }
-}
+};
 
-// 關閉 Modal 視窗
 window.closeModal = function(event) {
     const modal = document.getElementById('experienceModal');
     if (modal) {
-        // 點擊遮罩背景時才關閉，點擊視窗內容本身不關閉
         if (!event || event.target === modal || event.target.classList.contains('modal-close')) {
             modal.classList.remove('open');
         }
     }
-}
+};
 
-
-// --- GitHub API 串接功能 (最新專案) ---
-
-const GITHUB_USERNAME = '41371204h'; // 您的 GitHub 用戶名
+// --- GitHub API ---
+const GITHUB_USERNAME = '41371204h';
 
 async function fetchGithubRepos() {
     const url = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=3`;
@@ -74,278 +68,199 @@ async function fetchGithubRepos() {
 
     if (!reposContainer || !loadingMessage) return;
 
-    // 顯示載入狀態
     reposContainer.innerHTML = '';
     reposContainer.appendChild(loadingMessage);
     loadingMessage.style.display = 'block';
 
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`GitHub API error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
 
-        // 隱藏載入訊息
+        const data = await response.json();
         loadingMessage.style.display = 'none';
 
         if (data && data.length > 0) {
-            let htmlContent = '';
-            data.forEach(repo => {
-                const name = repo.name;
-                const description = repo.description || '無專案描述';
-                const url = repo.html_url;
-                const language = repo.language || 'N/A';
-                // 格式化日期：YYYY-MM-DD
-                const updated = new Date(repo.updated_at).toLocaleDateString('zh-TW', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                });
-
-                htmlContent += `
+            reposContainer.innerHTML = data.map(repo => {
+                const updated = new Date(repo.updated_at).toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'});
+                return `
                     <div class="github-card fade-in">
-                        <a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>
-                        <p class="description">${description}</p>
+                        <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+                        <p class="description">${repo.description || '無專案描述'}</p>
                         <div class="github-info">
-                            <span class="language">${language}</span>
+                            <span class="language">${repo.language || 'N/A'}</span>
                             <span>更新於 ${updated}</span>
                         </div>
-                    </div>
-                `;
-            });
-            reposContainer.innerHTML = htmlContent;
-            
+                    </div>`;
+            }).join('');
+
             if (typeof setupScrollReveal === 'function') {
-                document.querySelectorAll('.github-card').forEach(card => card.classList.add('fade-in'));
-                setupScrollReveal(); 
+                document.querySelectorAll('.github-card').forEach(card => card.classList.add('show'));
+                setupScrollReveal();
             }
+
         } else {
             reposContainer.innerHTML = '<p style="color: var(--muted); text-align: center;">找不到公開的專案。</p>';
         }
 
-    } catch (error) {
-        console.error("Fetch GitHub Repos Error:", error);
-        reposContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入 GitHub 專案失敗，請稍後再試。</p>';
+    } catch (err) {
+        console.error(err);
+        reposContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">GitHub 載入失敗</p>';
     }
 }
 
+// --- Google Books API ---
+const MAX_RESULTS = 4;
 
-// --- Google Books API 串接功能 (最終穩定強制切換版) ---
-
-const MAX_RESULTS = 4; // 顯示的書籍數量
-
-// 核心功能：根據主題來獲取書籍
 async function fetchBooks(queryTopic) {
-    const API_QUERY = queryTopic || 'Web Development';
-    
-    // 1. 決定排序方式 (使用 startIndex 確保切換)
+    const topic = queryTopic || 'Web Development';
     let orderBy = 'relevance';
     let startIndex = 0;
-    
-    switch (API_QUERY) {
-        case 'Web Development':
-            startIndex = 0;
-            orderBy = 'relevance';
-            break;
-        case 'Critical Thinking':
-            startIndex = 4; // 強制從第 5 本書開始
-            orderBy = 'relevance';
-            break;
-        case 'Time Management':
-            startIndex = 8; // 強制從第 9 本書開始
-            orderBy = 'newest';
-            break;
-        case 'Career Growth':
-            startIndex = 12; // 強制從第 13 本書開始
-            orderBy = 'newest';
-            break;
+
+    switch (topic) {
+        case 'Web Development': startIndex = 0; orderBy = 'relevance'; break;
+        case 'Critical Thinking': startIndex = 4; break;
+        case 'Time Management': startIndex = 8; orderBy = 'newest'; break;
+        case 'Career Growth': startIndex = 12; orderBy = 'newest'; break;
     }
 
-    // 2. 構造 URL
-    const encodedQuery = encodeURIComponent(API_QUERY); 
-    const cacheBuster = Math.random(); 
-    
-    // 關鍵：將 startIndex 加入 URL 參數中
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&startIndex=${startIndex}&langRestrict=zh-TW&orderBy=${orderBy}&cacheBuster=${cacheBuster}`;
-    
-    
-    const bookResultsContainer = document.getElementById('book-results');
-    const loadingMessage = document.getElementById('loading-message'); 
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(topic)}&maxResults=${MAX_RESULTS}&startIndex=${startIndex}&langRestrict=zh-TW&orderBy=${orderBy}&cache=${Math.random()}`;
 
-    if (!bookResultsContainer || !loadingMessage) return;
-    
-    // 顯示載入狀態 (先清空舊內容)
-    bookResultsContainer.innerHTML = '';
-    if (!document.body.contains(loadingMessage)) {
-        bookResultsContainer.appendChild(loadingMessage);
-    }
-    loadingMessage.style.display = 'block';
+    const container = document.getElementById('book-results');
+    const loading = document.getElementById('loading-message');
+
+    if (!container || !loading) return;
+
+    container.innerHTML = '';
+    container.appendChild(loading);
+    loading.style.display = 'block';
 
     try {
         const response = await fetch(url);
-        
-        if (!response.ok) {
-             throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
+        if (!response.ok) throw new Error(response.status);
 
-        // 隱藏載入訊息
-        loadingMessage.style.display = 'none';
+        const data = await response.json();
+        loading.style.display = 'none';
 
         if (data.items && data.items.length > 0) {
-            let htmlContent = '';
-            data.items.forEach(item => {
+            container.innerHTML = data.items.filter(item => item.volumeInfo.title && item.volumeInfo.imageLinks)
+            .map(item => {
                 const info = item.volumeInfo;
-                if (info.title && info.imageLinks) {
-                    const title = info.title;
-                    const authors = info.authors ? info.authors.join(', ') : '未知作者';
-                    const thumbnailUrl = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || 'placeholder.jpg'; 
+                const img = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || 'placeholder.jpg';
 
-                    htmlContent += `
-                        <div class="book-card">
-                            <img src="${thumbnailUrl}" alt="${title} 封面">
-                            <h4>${title}</h4>
-                            <p>${authors}</p>
-                        </div>
-                    `;
-                }
-            });
-            bookResultsContainer.innerHTML = htmlContent;
+                return `
+                    <div class="book-card">
+                        <img src="${img}" alt="${info.title} 封面">
+                        <h4>${info.title}</h4>
+                        <p>${info.authors ? info.authors.join(', ') : '未知作者'}</p>
+                    </div>`;
+            }).join('');
+
             if (typeof setupScrollReveal === 'function') {
-                setupScrollReveal(); 
+                document.querySelectorAll('.book-card').forEach(card => card.classList.add('show'));
+                setupScrollReveal();
             }
+
         } else {
-            bookResultsContainer.innerHTML = `<p style="color: var(--muted); text-align: center;">抱歉，找不到符合「${API_QUERY}」主題的書籍。</p>`;
+            container.innerHTML = `<p style="color: var(--muted); text-align: center;">找不到符合「${topic}」的書籍。</p>`;
         }
 
-    } catch (error) {
-        console.error("Fetch Books Error:", error);
-        bookResultsContainer.innerHTML = `<p style="color: var(--accent); text-align: center;">載入書籍失敗，請稍後再試。(${API_QUERY})</p>`;
+    } catch (err) {
+        console.error("Books API Error:", err);
+        container.innerHTML = `<p style="color: var(--accent); text-align: center;">載入失敗：${topic}</p>`;
     }
 }
 
-
-// --- 互動邏輯：處理主題按鈕點擊 (確保獲取正確主題) ---
-
+// --- 書單主題按鈕 ---
 function setupBookTopicInteraction() {
     const buttons = document.querySelectorAll('.topic-btn');
-    buttons.forEach(button => {
-        // 使用 event.currentTarget 確保我們引用的是按鈕元素本身
-        button.addEventListener('click', (event) => {
-            const clickedButton = event.currentTarget; 
-            
-            // 1. 取得選中的主題
-            const selectedTopic = clickedButton.dataset.topic; 
 
-            // 2. 更新按鈕的 Active 狀態
-            buttons.forEach(btn => btn.classList.remove('active'));
-            clickedButton.classList.add('active'); 
+    buttons.forEach(btn => {
+        btn.addEventListener('click', e => {
+            const target = e.currentTarget;
+            const topic = target.dataset.topic;
 
-            // 3. 呼叫 API 載入新主題書籍
-            if (selectedTopic) {
-                fetchBooks(selectedTopic);
-            } else {
-                console.error("Error: data-topic attribute not found on the clicked element.");
-            }
+            buttons.forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+
+            fetchBooks(topic);
         });
     });
 }
 
-
-// --- 技能長條圖動畫 (只在 skills.html 執行) ---
+// --- 技能長條圖動畫 ---
 function animateBars(){
     document.querySelectorAll('.bar').forEach((b,i)=>{
-        const p = b.getAttribute('data-percent') || '0';
+        const percent = b.getAttribute('data-percent') || '0';
         const fill = b.querySelector('.fill');
-        // Reset width before animation if the page is reloaded
         fill.style.width = '0%';
         fill.style.transition = 'none';
 
-        // Staggered animation
         setTimeout(()=>{
             fill.style.transition = 'width 900ms cubic-bezier(.2,.9,.2,1)';
-            fill.style.width = p + '%';
+            fill.style.width = percent + '%';
         }, 100*i + 200);
     })
 }
 
-
-// --- 滾動揭示動畫 (Scroll Reveal) ---
+// --- Scroll Reveal ---
 function setupScrollReveal(){
     const io = new IntersectionObserver((entries)=>{
-        entries.forEach((ent)=>{
+        entries.forEach(ent=>{
             if(ent.isIntersecting){
-                // For single fade-in elements
                 ent.target.classList.add('show');
-                
-                // For staggered containers (like Cards or Bars)
+
                 if(ent.target.classList.contains('stagger')){
-                    const children = Array.from(ent.target.children);
-                    children.forEach((c,idx)=>{
-                        // Apply show class with staggered delay
+                    [...ent.target.children].forEach((c,idx)=>{
                         setTimeout(()=>c.classList.add('show'), idx*100);
                     });
                 }
-                
-                // Special case for bars (trigger the bar fill animation)
+
                 if(ent.target.classList.contains('bars')){
                     animateBars();
                 }
 
-                io.unobserve(ent.target); // Stop observing once revealed
+                io.unobserve(ent.target);
             }
         });
     },{threshold:0.12});
 
-    // Observe all elements marked for animation
     document.querySelectorAll('.fade-in, .stagger').forEach(el=>{
-        // Hide children initially for stagger effect
-        if(el.classList.contains('stagger')) {
-             Array.from(el.children).forEach(c => c.classList.remove('show'));
+        if(el.classList.contains('stagger')){
+            [...el.children].forEach(c=>c.classList.remove('show'));
         }
         io.observe(el);
     });
 }
 
-
-// --- 暗黑模式切換 (Double-click brand) ---
+// --- Dark Mode ---
 function setupDarkModeToggle(){
     const key = 'site-dark-mode-v1';
-    const saved = localStorage.getItem(key);
-    if(saved === '1') document.body.classList.add('dark-mode');
-    
+    if(localStorage.getItem(key)==='1'){
+        document.body.classList.add('dark-mode');
+    }
+
     const brand = document.querySelector('.brand');
-    if(brand) {
-        brand.addEventListener('dblclick', ()=>{
+    if(brand){
+        brand.addEventListener('dblclick',()=>{
             document.body.classList.toggle('dark-mode');
-            localStorage.setItem(key, document.body.classList.contains('dark-mode')? '1':'0');
+            localStorage.setItem(key, document.body.classList.contains('dark-mode') ? '1' : '0');
         });
     }
 }
 
-
-// --- 頁面啟動點 (最終統一版，修復 API 互動問題) ---
-// 移除了衝突的 DOMContentLoaded，只保留 window.addEventListener('load')
+// --- Page Init ---
 window.addEventListener('load', async () => {
-    // 1. 基本設定 (在所有頁面執行)
-    setupDarkModeToggle(); 
-    setupScrollReveal(); 
-    
-    // 2. 技能頁面專屬功能
-    if(document.body.classList.contains('skill-page')) {
+    setupDarkModeToggle();
+    setupScrollReveal();
+
+    if(document.body.classList.contains('skill-page')){
         animateBars();
-        fetchGithubRepos(); // ★★★ 載入 GitHub 專案 ★★★
+        fetchGithubRepos();
     }
 
-    // 3. 書單互動功能 (只在主頁 index.html 執行)
     const topicButtons = document.querySelector('.topic-buttons');
-    if (topicButtons) {
-        // A. 初始載入預設書籍 ('Web Development')
-        await fetchBooks('Web Development'); 
-
-        // B. 設置互動功能 (確保按鈕點擊能切換書單)
-        setupBookTopicInteraction(); 
+    if(topicButtons){
+        await fetchBooks('Web Development');
+        setupBookTopicInteraction();
     }
 });
