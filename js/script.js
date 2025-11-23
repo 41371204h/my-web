@@ -264,3 +264,26 @@ window.addEventListener('load', async () => {
         setupBookTopicInteraction();
     }
 });
+document.addEventListener("DOMContentLoaded", () => {
+    const topicButtons = document.querySelectorAll(".topic-btn");
+
+    topicButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            // 1. 移除全部 active 樣式
+            topicButtons.forEach(b => b.classList.remove("active"));
+
+            // 2. 加到被點擊的按鈕
+            btn.classList.add("active");
+
+            // 3. 抓主題字串
+            const topic = btn.dataset.topic;
+
+            // 4. 呼叫抓書函式
+            fetchBooks(topic);
+        });
+    });
+
+    // 預設載入第一個主題
+    fetchBooks(topicButtons[0].dataset.topic);
+});
+
