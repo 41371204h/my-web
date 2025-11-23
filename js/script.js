@@ -366,7 +366,7 @@ function setupDarkModeToggle(){
 }
 
 
-// --- 頁面啟動點 (最終修正版 - 確保功能只在對應頁面啟動) ---
+// --- 頁面啟動點 (最終修正版 - 修正書單互動順序) ---
 window.addEventListener('load', async () => {
     // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
@@ -382,15 +382,13 @@ window.addEventListener('load', async () => {
     }
 
     // 4. 主頁功能 (書單互動 & 天氣按鈕)
-    // 檢查是否有主頁的獨有元素 (例如 Hero 區塊的 avatar)
-    const heroAvatar = document.querySelector('.hero .avatar');
-    if (heroAvatar) { // 假設 index.html 是唯一有 .hero .avatar 的頁面
-        
-        // ★★★ 在此處確保天氣互動功能被呼叫 ★★★
+    const topicButtons = document.querySelector('.topic-buttons');
+    if (topicButtons) { 
+        // A. 立即綁定互動功能，這樣按鈕一載入就有反應
         setupWeatherInteraction(); 
+        setupBookTopicInteraction(); // ★★★ 將按鈕綁定提前 ★★★
 
-        // 載入書籍功能
+        // B. 載入書籍功能 (這會觸發第一次顯示，並讓按鈕可用)
         await fetchBooks('Web Development'); 
-        setupBookTopicInteraction(); 
     }
 });
