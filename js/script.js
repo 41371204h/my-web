@@ -270,29 +270,30 @@ async function fetchBooks(queryTopic) {
             `<p style="color: var(--accent); text-align: center;">載入書籍失敗。(${error.message})</p>`;
     }
 }
-// --- 天氣互動彈窗功能 (確保定義在最頂層) ---
-function setupWeatherInteraction() {
-    const actionButton = document.getElementById('weather-action');
-    const weatherInfoSpan = document.getElementById('weather-info');
-    
-    if (actionButton && weatherInfoSpan) {
-        actionButton.addEventListener('click', (e) => {
-            e.preventDefault(); // 阻止連結跳轉
+// --- 互動邏輯：處理主題按鈕點擊 (確保獲取正確主題) ---
+function setupBookTopicInteraction() {
+    const buttons = document.querySelectorAll('.topic-btn');
+    buttons.forEach(button => {
+        // 使用 event.currentTarget 來確保我們引用的是按鈕元素本身，而不是內部文字
+        button.addEventListener('click', (event) => {
+            const clickedButton = event.currentTarget; 
+            
+            // 1. 取得選中的主題
+            const selectedTopic = clickedButton.dataset.topic; 
 
-            const currentInfo = weatherInfoSpan.textContent;
-            
-            const city = '臺北'; 
-            
-            alert(`
-                天氣資訊：
-                地點：${city}
-                狀態：${currentInfo}
-                資料來源：OpenWeatherMap (即時)
-            `);
+            // 2. 更新按鈕的 Active 狀態
+            buttons.forEach(btn => btn.classList.remove('active'));
+            clickedButton.classList.add('active'); 
+
+            // 3. 呼叫 API 載入新主題書籍
+            if (selectedTopic) {
+                fetchBooks(selectedTopic);
+            } else {
+                console.error("Error: data-topic attribute not found on the clicked element.");
+            }
         });
-    }
+    });
 }
-
 
 // --- 技能長條圖動畫 (只在 skills.html 執行) ---
 function animateBars(){
@@ -366,29 +367,39 @@ function setupDarkModeToggle(){
 }
 
 
-// --- 頁面啟動點 (最終修正版 - 修正書單互動順序) ---
+// --- 頁面啟動點 (最終修正版 - 確保功能存在才調用) ---
 window.addEventListener('load', async () => {
     // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
     setupScrollReveal(); 
     
     // 2. 天氣 API 數據載入：在所有頁面執行
-    fetchCurrentWeather();
+    if (typeof fetchCurrentWeather === 'function') {
+        fetchCurrentWeather();
+    }
     
     // 3. 技能頁面專屬功能
     if(document.body.classList.contains('skill-page')) {
         animateBars();
-        fetchGithubRepos(); 
+        if (typeof fetchGithubRepos === 'function') {
+            fetchGithubRepos(); 
+        }
     }
 
     // 4. 主頁功能 (書單互動 & 天氣按鈕)
     const topicButtons = document.querySelector('.topic-buttons');
     if (topicButtons) { 
-        // A. 立即綁定互動功能，這樣按鈕一載入就有反應
-        setupWeatherInteraction(); 
-        setupBookTopicInteraction(); // ★★★ 將按鈕綁定提前 ★★★
-
-        // B. 載入書籍功能 (這會觸發第一次顯示，並讓按鈕可用)
-        await fetchBooks('Web Development'); 
+        // 確保函式存在才調用
+        if (typeof setupWeatherInteraction === 'function') {
+             setupWeatherInteraction();
+        }
+        
+        if (typeof fetchBooks === 'function') {
+            await fetchBooks('Web Development'); 
+        }
+        
+        if (typeof setupBookTopicInteraction === 'function') {
+             setupBookTopicInteraction(); 
+        }
     }
 });
