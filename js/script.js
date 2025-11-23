@@ -1,5 +1,5 @@
 // --- OpenWeatherMap 配置 ---
-const WEATHER_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"; // ★★★ 請替換成您的 Key ★★★
+const WEATHER_API_KEY = "83b7835fd502cff5c1fe69ce70a7fe7e"; // ★★★ 請替換成您的 Key ★★★
 const CITY_LAT = 25.033; 
 const CITY_LON = 121.565; 
 
