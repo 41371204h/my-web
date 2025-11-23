@@ -140,25 +140,33 @@ async function fetchBooks(queryTopic) {
         bookResultsContainer.innerHTML = `<p style="color: var(--accent); text-align: center;">載入書籍失敗，請稍後再試。(${API_QUERY})</p>`;
     }
 }
-// --- 互動邏輯：處理主題按鈕點擊 ---
+// --- 互動邏輯：處理主題按鈕點擊 (修正版) ---
 
 function setupBookTopicInteraction() {
     const buttons = document.querySelectorAll('.topic-btn');
     buttons.forEach(button => {
+        // 使用 event.currentTarget 來確保我們引用的是按鈕元素本身，而不是內部文字
         button.addEventListener('click', (event) => {
+            // 使用 event.currentTarget 來引用到事件綁定所在的按鈕
+            const clickedButton = event.currentTarget; 
+            
             // 1. 取得選中的主題
-            const selectedTopic = event.target.dataset.topic;
+            const selectedTopic = clickedButton.dataset.topic; // 從按鈕元素上獲取 data-topic
 
             // 2. 更新按鈕的 Active 狀態
             buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            clickedButton.classList.add('active'); // 對按鈕元素操作 active 狀態
 
             // 3. 呼叫 API 載入新主題書籍
-            fetchBooks(selectedTopic);
+            // 檢查是否成功獲取主題，如果獲取失敗 (可能是 undefined)，則不呼叫 fetchBooks
+            if (selectedTopic) {
+                fetchBooks(selectedTopic);
+            } else {
+                console.error("Error: data-topic attribute not found on the clicked element.");
+            }
         });
     });
 }
-
 
 // --- 技能長條圖動畫 (只在 skills.html 執行) ---
 function animateBars(){
