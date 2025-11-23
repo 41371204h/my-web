@@ -111,8 +111,7 @@ window.closeModal = function(event) {
     }
 }
 
-// --- GitHub API 串接功能 (修正 API 速率限制檢查) ---
-
+// --- GitHub API 串接功能 (最終穩定版，包含速率限制檢查) ---
 const GITHUB_USERNAME = '41371204h'; // 您的 GitHub 用戶名
 
 async function fetchGithubRepos() {
@@ -130,32 +129,33 @@ async function fetchGithubRepos() {
     try {
         const response = await fetch(url);
 
-        // ★★★ 關鍵修正：檢查速率限制和錯誤狀態碼 ★★★
-        if (response.status === 403) {
-            // 檢查是否為速率限制錯誤 (通常會返回 403 或 429)
+        if (response.status === 403 || response.status === 429) {
+            // 處理速率限制
             const rateLimitReset = response.headers.get('X-Ratelimit-Reset');
             const resetTime = rateLimitReset ? new Date(rateLimitReset * 1000).toLocaleTimeString() : '稍後';
             
+            // ★★★ 錯誤處理，顯示錯誤訊息並返回 ★★★
+            loadingMessage.style.display = 'none'; // 隱藏載入
             reposContainer.innerHTML = `
                 <p style="color: var(--accent); text-align: center; font-weight: 600;">
-                    🚨 API 請求次數已達上限。請於 ${resetTime} 後再試。
+                    🚨 GitHub 請求次數已達上限。請於 ${resetTime} 後再試。
                 </p>
             `;
             return;
         }
 
         if (!response.ok) {
-            throw new Error(`GitHub API error! status: ${response.status}`);
+            throw new Error(`GitHub API 錯誤! 狀態碼: ${response.status}`);
         }
-        // ★★★ 結束關鍵修正 ★★★
         
         const data = await response.json();
 
-        // 隱藏載入訊息
+        // ★★★ 成功獲取數據後，隱藏載入訊息 ★★★
         loadingMessage.style.display = 'none';
 
         if (data && data.length > 0) {
             let htmlContent = '';
+            // ... (專案卡片 HTML 產生邏輯保持不變) ...
             data.forEach(repo => {
                 const name = repo.name;
                 const description = repo.description || '無專案描述';
@@ -163,9 +163,7 @@ async function fetchGithubRepos() {
                 const language = repo.language || 'N/A';
                 
                 const updated = new Date(repo.updated_at).toLocaleDateString('zh-TW', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
+                    year: 'numeric', month: '2-digit', day: '2-digit'
                 });
 
                 htmlContent += `
@@ -190,13 +188,14 @@ async function fetchGithubRepos() {
         }
 
     } catch (error) {
+        // ★★★ 發生錯誤時，隱藏載入訊息並顯示錯誤提示 ★★★
+        if (loadingMessage) loadingMessage.style.display = 'none';
         console.error("Fetch GitHub Repos Error:", error);
-        reposContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入 GitHub 專案失敗，請檢查網路或用戶名。</p>';
+        reposContainer.innerHTML = `<p style="color: var(--accent); text-align: center;">載入 GitHub 專案失敗。(${error.message})</p>`;
     }
 }
 
-// --- Google Books API 串接功能 (強制變化版) ---
-
+// --- Google Books API 串接功能 (最終穩定版) ---
 const MAX_RESULTS = 4; // 顯示的書籍數量
 
 async function fetchBooks(queryTopic) {
@@ -205,33 +204,37 @@ async function fetchBooks(queryTopic) {
         ? 'newest'
         : 'relevance';
 
-    const cacheBuster = Math.random();
+    // 確保每次請求都是新的，避免瀏覽器快取問題
     const encodedQuery = encodeURIComponent(API_QUERY);
-
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&langRestrict=zh-TW&orderBy=${orderBy}&cacheBuster=${cacheBuster}`;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&langRestrict=zh-TW&orderBy=${orderBy}`;
 
     const bookResultsContainer = document.getElementById('book-results');
     const loadingMessage = document.getElementById('loading-message');
 
-    // 🚀 **強制清空舊書單（最關鍵修正！）**
+    // 確保 DOM 元素存在
+    if (!bookResultsContainer || !loadingMessage) return;
+
+    // 清空舊書單並顯示載入訊息
     bookResultsContainer.innerHTML = '';
-
-    // 🚀 確保 loadingMessage 在容器裡，不使用 body.contains
-    if (loadingMessage && loadingMessage.parentNode !== bookResultsContainer) {
-        bookResultsContainer.appendChild(loadingMessage);
-    }
-
-    if (loadingMessage) loadingMessage.style.display = 'block';
+    bookResultsContainer.appendChild(loadingMessage); 
+    loadingMessage.style.display = 'block';
 
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        // 檢查 HTTP 狀態碼
+        if (!response.ok) {
+             throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
+        }
 
         const data = await response.json();
-        if (loadingMessage) loadingMessage.style.display = 'none';
+        
+        // ★★★ 成功獲取數據後，隱藏載入訊息 ★★★
+        loadingMessage.style.display = 'none';
 
         if (data.items && data.items.length > 0) {
             let htmlContent = '';
+            // ... (書籍卡片 HTML 產生邏輯保持不變) ...
             data.items.forEach(item => {
                 const info = item.volumeInfo;
                 if (info.title && info.imageLinks) {
@@ -260,9 +263,11 @@ async function fetchBooks(queryTopic) {
         }
 
     } catch (error) {
+        // ★★★ 發生錯誤時，隱藏載入訊息並顯示錯誤提示 ★★★
+        if (loadingMessage) loadingMessage.style.display = 'none';
         console.error("Fetch Books Error:", error);
         bookResultsContainer.innerHTML =
-            `<p style="color: var(--accent); text-align: center;">載入書籍失敗。（${API_QUERY}）</p>`;
+            `<p style="color: var(--accent); text-align: center;">載入書籍失敗。(${error.message})</p>`;
     }
 }
 
