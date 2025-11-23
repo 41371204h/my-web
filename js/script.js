@@ -301,7 +301,7 @@ function setupDarkModeToggle(){
 }
 
 
-// --- 頁面啟動點 (最終統一版，修復 API 互動問題) ---
+// --- 頁面啟動點 (最終統一版，包含 GitHub API) ---
 window.addEventListener('load', async () => {
     // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
@@ -311,7 +311,7 @@ window.addEventListener('load', async () => {
     if(document.body.classList.contains('skill-page')) {
         animateBars();
         // ★★★ 新增：載入 GitHub 專案 ★★★
-        fetchGithubRepos(); 
+        fetchGithubRepos();
     }
 
     // 3. 書單互動功能 (只在主頁 index.html 執行)
