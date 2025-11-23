@@ -1,20 +1,19 @@
 // --- OpenWeatherMap API 函數 (最終版 - 主頁即時查詢) ---
-const WEATHER_API_KEY = "83b7835fd502cff5c1fe69ce70a7fe7e"; // ★★★ 替換成您的 Key ★★★
-const CITY_LAT = 25.033; // 臺北緯度
-const CITY_LON = 121.565; // 臺北經度
+// ★★★ 您的真實 Key 在這裡：83b7835fd502cff5c1fe69ce70a7fe7e ★★★
+const WEATHER_API_KEY = "83b7835fd502cff5c1fe69ce70a7fe7e"; 
+const CITY_LAT = 25.033; 
+const CITY_LON = 121.565; 
 
 async function fetchCurrentWeather() {
     const weatherDisplay = document.getElementById('weather-info');
     if (!weatherDisplay) return;
 
-    if (WEATHER_API_KEY === "83b7835fd502cff5c1fe69ce70a7fe7e") {
-        weatherDisplay.innerHTML = "API Key 錯誤";
-        return;
-    }
-
+    // ★★★ 移除錯誤的 Key 檢測邏輯 (已刪除) ★★★
+    
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${CITY_LAT}&lon=${CITY_LON}&units=metric&appid=${WEATHER_API_KEY}`;
     
     try {
+    // ... (後續程式碼保持不變)
         const response = await fetch(url);
         const data = await response.json();
 
