@@ -63,24 +63,28 @@ window.closeModal = function(event) {
 }
 
 
-// --- Google Books API 串接功能 (書單) ---
+// --- Google Books API 串接功能 (修正版) ---
 
 const MAX_RESULTS = 4; // 顯示的書籍數量
 
 // 核心功能：根據主題來獲取書籍
 async function fetchBooks(queryTopic) {
     const API_QUERY = queryTopic || 'Web Development'; // 預設主題
-    // 使用 relevance 排序
     const url = `https://www.googleapis.com/books/v1/volumes?q=${API_QUERY}&maxResults=${MAX_RESULTS}&langRestrict=zh-TW&orderBy=relevance`;
     
     const bookResultsContainer = document.getElementById('book-results');
-    const loadingMessage = document.getElementById('loading-message');
+    
+    // 每次都重新獲取載入訊息元素
+    const loadingMessage = document.getElementById('loading-message'); 
 
-    if (!bookResultsContainer) return;
+    if (!bookResultsContainer || !loadingMessage) return;
     
     // 顯示載入狀態
     bookResultsContainer.innerHTML = '';
-    bookResultsContainer.appendChild(loadingMessage);
+    // 檢查 loadingMessage 是否還在 DOM 中，如果不在，就重新添加
+    if (!document.body.contains(loadingMessage)) {
+        bookResultsContainer.appendChild(loadingMessage);
+    }
     loadingMessage.style.display = 'block';
 
     try {
@@ -122,7 +126,6 @@ async function fetchBooks(queryTopic) {
         bookResultsContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入書籍失敗，請檢查網路或 API 服務。</p>';
     }
 }
-
 
 // --- 互動邏輯：處理主題按鈕點擊 ---
 
