@@ -367,39 +367,31 @@ function setupDarkModeToggle(){
 }
 
 
-// --- 頁面啟動點 (最終修正版 - 確保功能存在才調用) ---
 window.addEventListener('load', async () => {
-    // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
     setupScrollReveal(); 
-    
-    // 2. 天氣 API 數據載入：在所有頁面執行
+
+    // 1. 綁定主題按鈕事件
+    if (typeof setupBookTopicInteraction === 'function') {
+        setupBookTopicInteraction();
+    }
+
+    // 2. 載入預設書單
+    if (typeof fetchBooks === 'function') {
+        fetchBooks('Web Development');
+    }
+
+    // 3. 天氣 API
     if (typeof fetchCurrentWeather === 'function') {
         fetchCurrentWeather();
     }
-    
-    // 3. 技能頁面專屬功能
+
+    // 4. 技能頁面專屬功能
     if(document.body.classList.contains('skill-page')) {
         animateBars();
-        if (typeof fetchGithubRepos === 'function') {
-            fetchGithubRepos(); 
-        }
+        if (typeof fetchGithubRepos === 'function') fetchGithubRepos(); 
     }
 
-    // 4. 主頁功能 (書單互動 & 天氣按鈕)
-    const topicButtons = document.querySelector('.topic-buttons');
-    if (topicButtons) { 
-        // 確保函式存在才調用
-        if (typeof setupWeatherInteraction === 'function') {
-             setupWeatherInteraction();
-        }
-        
-        if (typeof fetchBooks === 'function') {
-            await fetchBooks('Web Development'); 
-        }
-        
-        if (typeof setupBookTopicInteraction === 'function') {
-             setupBookTopicInteraction(); 
-        }
-    }
+    // 5. 天氣互動（若有）
+    if (typeof setupWeatherInteraction === 'function') setupWeatherInteraction();
 });
