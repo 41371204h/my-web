@@ -386,13 +386,13 @@ function setupDarkModeToggle(){
         });
     }
 }
-// --- 頁面啟動點 (最終修正版 - 確保功能存在才調用) ---
+// --- 頁面啟動點 (最終保證切換與綁定成功版) ---
 window.addEventListener('load', async () => {
-    // 1. 基本設定 (在所有頁面執行)
+    // 1. 立即執行基本設定
     setupDarkModeToggle(); 
     setupScrollReveal(); 
     
-    // 2. 天氣 API 數據載入：在所有頁面執行
+    // 2. 在所有頁面載入天氣 API
     if (typeof fetchCurrentWeather === 'function') {
         fetchCurrentWeather();
     }
@@ -403,24 +403,28 @@ window.addEventListener('load', async () => {
         if (typeof fetchGithubRepos === 'function') fetchGithubRepos(); 
     }
 
-    // 4. 主頁功能 (書單互動 & 天氣按鈕)
+    // ★★★ 4. 主頁 書單功能：使用 setTimeout 延遲執行，確保 DOM 完全穩定 ★★★
     const topicButtons = document.querySelector('.topic-buttons');
     if (topicButtons) { 
         
-        // 載入書籍功能 (必須等待)
-        if (typeof fetchBooks === 'function') {
-            // ★★★ 確保使用 await 等待書籍載入完成 ★★★
-            await fetchBooks('Web Development'); 
-        }
-        
-        // ★★★ 確保在按鈕綁定之前，書單內容已經顯示 ★★★
-        if (typeof setupBookTopicInteraction === 'function') {
-             setupBookTopicInteraction(); 
-        }
-        
-        // 天氣互動功能
-        if (typeof setupWeatherInteraction === 'function') {
-             setupWeatherInteraction();
-        }
+        // 使用 setTimeout 延遲綁定，讓瀏覽器有時間完成所有渲染
+        setTimeout(async () => {
+            
+            // 立即綁定按鈕事件
+            if (typeof setupBookTopicInteraction === 'function') {
+                 setupBookTopicInteraction(); 
+            }
+            
+            // 延遲後，再呼叫 API 載入預設書籍
+            if (typeof fetchBooks === 'function') {
+                 await fetchBooks('Web Development'); 
+            }
+            
+            // 確保天氣按鈕可以互動
+            if (typeof setupWeatherInteraction === 'function') {
+                 setupWeatherInteraction();
+            }
+            
+        }, 100); // 延遲 100 毫秒
     }
 });
