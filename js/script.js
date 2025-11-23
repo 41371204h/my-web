@@ -1,62 +1,99 @@
-// --- Google Books API 串接功能 ---
+// --- Google Books API 串接功能 (修改為可接受主題參數) ---
 
-const API_QUERY = 'Web Development OR Critical Thinking'; // 替換為您想展示的主題或書名
 const MAX_RESULTS = 4; // 顯示的書籍數量
 
-async function fetchBooks() {
+// 核心功能：根據主題來獲取書籍
+async function fetchBooks(queryTopic) {
+    const API_QUERY = queryTopic || 'Web Development'; // 預設主題
     const url = `https://www.googleapis.com/books/v1/volumes?q=${API_QUERY}&maxResults=${MAX_RESULTS}&langRestrict=zh-TW&orderBy=relevance`;
+    
     const bookResultsContainer = document.getElementById('book-results');
     const loadingMessage = document.getElementById('loading-message');
 
-    // 確保容器存在
     if (!bookResultsContainer) return;
+    
+    // 顯示載入狀態
+    bookResultsContainer.innerHTML = '';
+    bookResultsContainer.appendChild(loadingMessage);
+    loadingMessage.style.display = 'block';
 
     try {
         const response = await fetch(url);
         const data = await response.json();
 
-        // 清除載入訊息
-        if (loadingMessage) {
-            loadingMessage.style.display = 'none';
-        }
-        
-        // 確保有結果
-        if (data.items && data.items.length > 0) {
-            bookResultsContainer.innerHTML = ''; // 清空容器
+        // 隱藏載入訊息
+        loadingMessage.style.display = 'none';
 
+        if (data.items && data.items.length > 0) {
+            let htmlContent = '';
             data.items.forEach(item => {
                 const info = item.volumeInfo;
-                // 檢查是否有足夠的資訊 (標題和圖片)
                 if (info.title && info.imageLinks) {
                     const title = info.title;
                     const authors = info.authors ? info.authors.join(', ') : '未知作者';
                     const thumbnailUrl = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail;
 
-                    const bookCard = `
+                    htmlContent += `
                         <div class="book-card">
                             <img src="${thumbnailUrl}" alt="${title} 封面">
                             <h4>${title}</h4>
                             <p>${authors}</p>
                         </div>
                     `;
-                    bookResultsContainer.innerHTML += bookCard;
                 }
             });
+            bookResultsContainer.innerHTML = htmlContent;
             // 由於書籍是動態載入，我們再次觸發 stagger 動畫
-            setupScrollReveal(); 
+            if (typeof setupScrollReveal === 'function') {
+                setupScrollReveal(); 
+            }
         } else {
-            bookResultsContainer.innerHTML = '<p style="color: var(--muted); text-align: center;">抱歉，找不到符合主題的書籍。</p>';
+            bookResultsContainer.innerHTML = '<p style="color: var(--muted); text-align: center;">抱歉，找不到符合該主題的書籍。</p>';
         }
 
     } catch (error) {
         console.error("Fetch Books Error:", error);
-        bookResultsContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入書籍失敗，請稍後再試。</p>';
+        bookResultsContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入書籍失敗，請檢查網路或 API 服務。</p>';
     }
 }
 
-// 在頁面載入完成後呼叫函式
-window.addEventListener('load', fetchBooks);
 
+// --- 互動邏輯：處理按鈕點擊 ---
+
+function setupBookTopicInteraction() {
+    const buttons = document.querySelectorAll('.topic-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            // 1. 取得選中的主題
+            const selectedTopic = event.target.dataset.topic;
+
+            // 2. 更新按鈕的 Active 狀態
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 3. 呼叫 API 載入新主題書籍
+            fetchBooks(selectedTopic);
+        });
+    });
+}
+
+
+// --- 頁面啟動點 ---
+window.addEventListener('load', () => {
+    // 1. 啟動互動功能
+    setupBookTopicInteraction(); 
+    
+    // 2. 載入預設書籍 (網頁設計)
+    fetchBooks('Web Development'); 
+    
+    // 3. 載入其它的初始化功能（例如原本的 ScrollReveal）
+    // 請確保您的 setupScrollReveal() 已經包含在 js/script.js 裡
+    if (typeof setupScrollReveal === 'function') {
+        setupScrollReveal(); 
+    }
+});
+
+// --- 請確保您的 openModal, closeModal, setupScrollReveal 等功能放在此下方或上方，並保持完整 ---
 // --- 原有的其他 JS 程式碼（如 openModal, closeModal, setupScrollReveal 等）應保持不變 ---
 // // --- Modal Content Data ---
 const experienceData = {
