@@ -111,7 +111,7 @@ window.closeModal = function(event) {
     }
 }
 
-// --- GitHub API 串接功能 (最新專案) ---
+// --- GitHub API 串接功能 (修正 API 速率限制檢查) ---
 
 const GITHUB_USERNAME = '41371204h'; // 您的 GitHub 用戶名
 
@@ -129,9 +129,26 @@ async function fetchGithubRepos() {
 
     try {
         const response = await fetch(url);
+
+        // ★★★ 關鍵修正：檢查速率限制和錯誤狀態碼 ★★★
+        if (response.status === 403) {
+            // 檢查是否為速率限制錯誤 (通常會返回 403 或 429)
+            const rateLimitReset = response.headers.get('X-Ratelimit-Reset');
+            const resetTime = rateLimitReset ? new Date(rateLimitReset * 1000).toLocaleTimeString() : '稍後';
+            
+            reposContainer.innerHTML = `
+                <p style="color: var(--accent); text-align: center; font-weight: 600;">
+                    🚨 API 請求次數已達上限。請於 ${resetTime} 後再試。
+                </p>
+            `;
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(`GitHub API error! status: ${response.status}`);
         }
+        // ★★★ 結束關鍵修正 ★★★
+        
         const data = await response.json();
 
         // 隱藏載入訊息
@@ -144,7 +161,7 @@ async function fetchGithubRepos() {
                 const description = repo.description || '無專案描述';
                 const url = repo.html_url;
                 const language = repo.language || 'N/A';
-                // 格式化日期：YYYY-MM-DD
+                
                 const updated = new Date(repo.updated_at).toLocaleDateString('zh-TW', {
                     year: 'numeric',
                     month: '2-digit',
@@ -164,7 +181,6 @@ async function fetchGithubRepos() {
             });
             reposContainer.innerHTML = htmlContent;
             
-            // 由於專案是動態載入，我們再次觸發 stagger 動畫
             if (typeof setupScrollReveal === 'function') {
                 document.querySelectorAll('.github-card').forEach(card => card.classList.add('fade-in'));
                 setupScrollReveal(); 
@@ -175,10 +191,9 @@ async function fetchGithubRepos() {
 
     } catch (error) {
         console.error("Fetch GitHub Repos Error:", error);
-        reposContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入 GitHub 專案失敗，請稍後再試。</p>';
+        reposContainer.innerHTML = '<p style="color: var(--accent); text-align: center;">載入 GitHub 專案失敗，請檢查網路或用戶名。</p>';
     }
 }
-
 
 // --- Google Books API 串接功能 (強制變化版) ---
 
