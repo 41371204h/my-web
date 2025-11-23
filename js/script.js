@@ -195,13 +195,13 @@ async function fetchGithubRepos() {
     }
 }
 
-// --- Google Books API 串接功能 (最終穩定版 - 強制無快取) ---
+// --- Google Books API 串接功能 (最終穩定版 - 強制無快取 & 帶 startIndex) ---
 const MAX_RESULTS = 4; // 顯示的書籍數量
 
 async function fetchBooks(queryTopic) {
     const API_QUERY = queryTopic || 'Web Development'; 
     
-    // 決定排序方式和起始索引 (保持邏輯不變)
+    // ★★★ 關鍵修正：確保排序和起始索引的邏輯在這裡 ★★★
     let orderBy = 'relevance';
     let startIndex = 0;
     
@@ -224,6 +224,7 @@ async function fetchBooks(queryTopic) {
 
     // 構造 URL
     const encodedQuery = encodeURIComponent(API_QUERY);
+    // 確保 URL 中包含 startIndex
     const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}&maxResults=${MAX_RESULTS}&startIndex=${startIndex}&langRestrict=zh-TW&orderBy=${orderBy}`;
     
     const bookResultsContainer = document.getElementById('book-results');
@@ -239,10 +240,8 @@ async function fetchBooks(queryTopic) {
     loadingMessage.style.display = 'block';
 
     try {
-        // ★★★ 關鍵修正：在 fetch 請求中加入 cache: 'no-cache' ★★★
-        const response = await fetch(url, {
-            cache: 'no-cache' 
-        });
+        // 關鍵修正：在 fetch 請求中加入 cache: 'no-cache'
+        const response = await fetch(url, { cache: 'no-cache' });
         
         if (!response.ok) {
              throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
@@ -291,6 +290,7 @@ async function fetchBooks(queryTopic) {
             `<p style="color: var(--accent); text-align: center;">載入書籍失敗。(${error.message})</p>`;
     }
 }
+
 // --- 互動邏輯：處理主題按鈕點擊 (確保獲取正確主題) ---
 function setupBookTopicInteraction() {
     const buttons = document.querySelectorAll('.topic-btn');
@@ -386,32 +386,41 @@ function setupDarkModeToggle(){
         });
     }
 }
-
+// --- 頁面啟動點 (最終修正版 - 確保功能存在才調用) ---
 window.addEventListener('load', async () => {
+    // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
     setupScrollReveal(); 
-
-    // 1️⃣ 先綁定按鈕
-    if (typeof setupBookTopicInteraction === 'function') {
-        setupBookTopicInteraction();
-    }
-
-    // 2️⃣ 再載入預設書單
-    if (typeof fetchBooks === 'function') {
-        fetchBooks('Web Development');
-    }
-
-    // 3️⃣ 天氣 API
+    
+    // 2. 天氣 API 數據載入：在所有頁面執行
     if (typeof fetchCurrentWeather === 'function') {
         fetchCurrentWeather();
     }
-
-    // 4️⃣ 技能頁面功能
+    
+    // 3. 技能頁面專屬功能
     if(document.body.classList.contains('skill-page')) {
         animateBars();
         if (typeof fetchGithubRepos === 'function') fetchGithubRepos(); 
     }
 
-    // 5️⃣ 天氣互動
-    if (typeof setupWeatherInteraction === 'function') setupWeatherInteraction();
+    // 4. 主頁功能 (書單互動 & 天氣按鈕)
+    const topicButtons = document.querySelector('.topic-buttons');
+    if (topicButtons) { 
+        
+        // 載入書籍功能 (必須等待)
+        if (typeof fetchBooks === 'function') {
+            // ★★★ 確保使用 await 等待書籍載入完成 ★★★
+            await fetchBooks('Web Development'); 
+        }
+        
+        // ★★★ 確保在按鈕綁定之前，書單內容已經顯示 ★★★
+        if (typeof setupBookTopicInteraction === 'function') {
+             setupBookTopicInteraction(); 
+        }
+        
+        // 天氣互動功能
+        if (typeof setupWeatherInteraction === 'function') {
+             setupWeatherInteraction();
+        }
+    }
 });
