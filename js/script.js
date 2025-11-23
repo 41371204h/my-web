@@ -366,32 +366,31 @@ function setupDarkModeToggle(){
     }
 }
 
-
 window.addEventListener('load', async () => {
     setupDarkModeToggle(); 
     setupScrollReveal(); 
 
-    // 1. 綁定主題按鈕事件
+    // 1️⃣ 先綁定按鈕
     if (typeof setupBookTopicInteraction === 'function') {
         setupBookTopicInteraction();
     }
 
-    // 2. 載入預設書單
+    // 2️⃣ 再載入預設書單
     if (typeof fetchBooks === 'function') {
         fetchBooks('Web Development');
     }
 
-    // 3. 天氣 API
+    // 3️⃣ 天氣 API
     if (typeof fetchCurrentWeather === 'function') {
         fetchCurrentWeather();
     }
 
-    // 4. 技能頁面專屬功能
+    // 4️⃣ 技能頁面功能
     if(document.body.classList.contains('skill-page')) {
         animateBars();
         if (typeof fetchGithubRepos === 'function') fetchGithubRepos(); 
     }
 
-    // 5. 天氣互動（若有）
+    // 5️⃣ 天氣互動
     if (typeof setupWeatherInteraction === 'function') setupWeatherInteraction();
 });
