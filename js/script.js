@@ -62,6 +62,11 @@ window.closeModal = function(event) {
     }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    setupBookTopicInteraction();
+    fetchBooks("Web Development");
+});
+
 // --- Google Books API 串接功能 (強制變化版) ---
 
 const MAX_RESULTS = 4; // 顯示的書籍數量
