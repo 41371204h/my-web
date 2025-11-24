@@ -17,52 +17,80 @@
 
 <body>
 
-   <div class="container nav">
-    
-    <div class="brand">LI,YA,YU</div>
-    
-    <div style="display: flex; align-items: center; gap: 30px;">
+    <div class="container nav">
         
-        <nav class="nav-links">
-            <a href="index.html" class="active">主頁</a>
-            <a href="skill.html">特質與技能</a>
-            <a href="experience.html">經歷</a>
-        </nav>
+        <div class="brand">LI,YA,YU</div>
         
-        <div id="weather-display-wrapper" style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 30px;">
             
-            <div id="weather-display" style="display: flex; align-items: center; gap: 8px;">
-                <i class="fa fa-sun" style="color: var(--primary);"></i>
-                <span id="weather-info">載入中...</span>
+            <nav class="nav-links">
+                <a href="index.html" class="active">主頁</a>
+                <a href="skill.html">特質與技能</a>
+                <a href="experience.html">經歷</a>
+            </nav>
+            
+            <div id="weather-display-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                
+                <div id="weather-display" style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa fa-sun" style="color: var(--primary);"></i>
+                    <span id="weather-info">載入中...</span>
+                </div>
+                
+                <a href="#" id="weather-action" title="點擊查看更多天氣資訊" style="text-decoration: none; color: var(--muted);">
+                    <i class="fa fa-info-circle fa-lg"></i>
+                </a>
             </div>
-            
-            <a href="#" id="weather-action" title="點擊查看更多天氣資訊" style="text-decoration: none; color: var(--muted);">
-                <i class="fa fa-info-circle fa-lg"></i>
-            </a>
         </div>
-        
     </div>
-</div>
 
     <div class="container py-5">
         <div class="hero">
             <div class="avatar fade-in">
                 <img src="img/S-65912838.jpg" alt="李雅郁"> 
             </div>
+            
             <div class="fade-in">
                 <h1>李雅郁</h1>
                 <div class="school">國立臺灣師範大學 ｜ 科技應用與人力資源發展學系</div>
-                <div style="height:16px"></div>
+                
+                <button id="toggle-quote-btn" style="
+                    background: var(--primary);
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    margin-top: 15px;
+                    margin-bottom: 15px;
+                    transition: opacity 0.2s ease;
+                ">
+                    ✨ 載入每日能量名言
+                </button>
                 
                 <div class="about-card stagger">
-                    <p style="margin:0 0 12px 0;line-height:1.7">嗨～我是個可E可I的人！剛認識我的時候可能會覺得我安安靜靜的，那只是我還在觀察環境😉<br>
-                    其實只要熟悉起來，或者有人主動和我搭話，我就會立刻把開關打開、變得很健談！</p>
+                    <p style="margin:0 0 12px 0;line-height:1.7">嗨～我是個可E可I的人！剛認識我的時候可能會覺得我安安靜靜的，那只是我還在觀察環境😉</p>
+                    <p style="margin:0 0 12px 0;line-height:1.7">其實只要熟悉起來，或者有人主動和我搭話，我就會立刻把開關打開、變得很健談！</p>
                     <p style="margin:0 0 12px 0;line-height:1.7">平常喜歡追劇、聽音樂，也超愛看棒球⚾，不管是和朋友一起去球場應援，還是邊吃宵夜邊看轉播，都能讓我覺得超放鬆。</p>
-                    <p style="margin:0 0 12px 0;line-height:1.7">我喜歡用照片、文字或小影片留住那些不起眼但溫柔的瞬間，因為日常的點滴，常常比想像中更值得珍惜。</p>
                     <p style="margin:0;line-height:1.7">如果你也喜歡追劇、聽音樂，或是一起聊球賽、分享生活，那我們一定會聊得很開心！🌿</p>
                 </div>
 
-                <div class="contact-small fade-in">
+                <div id="quote-container" style="
+                    margin-top: 25px;
+                    padding: 15px 20px;
+                    background: rgba(14,165,164,0.05);
+                    border-left: 5px solid var(--primary);
+                    border-radius: 4px;
+                    display: none;
+                ">
+                    <p id="quote-text" style="font-style: italic; margin: 0; color: var(--text); font-weight: 500;">
+                        "點擊上方按鈕載入名言..."
+                    </p>
+                    <p id="quote-author" style="text-align: right; margin: 5px 0 0; font-size: 0.9em; color: var(--muted);">
+                        - 載入中
+                    </p>
+                </div>
+                <div class="contact-small">
                     <a href="tel:0905493518"><i class="fa fa-phone"></i> 0905-493-518</a>
                     <a href="mailto:41371204h@gapps.ntnu.edu.tw"><i class="fa fa-envelope"></i> 41371204h@gapps.ntnu.edu.tw</a>
                     <a href="https://www.linkedin.com/in/%E6%9D%8E%E9%9B%85%E9%83%81-%E5%8F%B0%E5%B8%88%E5%A4%A7-41371204h/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
@@ -70,6 +98,7 @@
             </div>
         </div>
     </div>
+    
     <div class="container" id="advantages">
         <section>
             <h2 class="fade-in">個人優勢</h2>
@@ -100,28 +129,30 @@
                 </div>
             </div>
         </section>
-       <div id="reading-list" class="container py-5">
-    <section>
-        <div class="text-center">
-            <h2 class="mb-4 fade-in">📖 探索與閱讀</h2>
-            <p style="color: var(--muted); max-width: 600px; margin: 0 auto 20px;">
-                保持對世界的好奇心，請選擇您感興趣的主題書單。
-            </p>
-
-            <div class="topic-buttons mb-4">
-                <button class="topic-btn active" data-topic="Web Development">網頁設計</button>
-                <button class="topic-btn" data-topic="Critical Thinking">思辨能力</button>
-                <button class="topic-btn" data-topic="Time Management">時間管理</button>
-                <button class="topic-btn" data-topic="Career Growth">職涯發展</button>
-            </div>
-        </div>
-
-        <div id="book-results" class="row g-4 stagger">
-            <p id="loading-message" style="color: var(--muted); text-align: center;">載入書籍中...</p>
-        </div>
-    </section>
-</div>
     </div>
+    
+    <div id="reading-list" class="container py-5">
+        <section>
+            <div class="text-center">
+                <h2 class="mb-4 fade-in">📖 探索與閱讀</h2>
+                <p style="color: var(--muted); max-width: 600px; margin: 0 auto 20px;">
+                    保持對世界的好奇心，請選擇您感興趣的主題書單。
+                </p>
+
+                <div class="topic-buttons mb-4">
+                    <button class="topic-btn active" data-topic="Web Development">網頁設計</button>
+                    <button class="topic-btn" data-topic="Critical Thinking">思辨能力</button>
+                    <button class="topic-btn" data-topic="Time Management">時間管理</button>
+                    <button class="topic-btn" data-topic="Career Growth">職涯發展</button>
+                </div>
+            </div>
+
+            <div id="book-results" class="row g-4 stagger">
+                <p id="loading-message" style="color: var(--muted); text-align: center;">載入書籍中...</p>
+            </div>
+        </section>
+    </div>
+    
     <div class="container" id="contact">
         <section>
             <h2 class="fade-in">聯絡資訊</h2>
@@ -148,6 +179,7 @@
             </div>
         </section>
     </div>
+    
     <footer>
         <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
