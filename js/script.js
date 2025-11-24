@@ -435,7 +435,7 @@ function setupDarkModeToggle(){
         });
     }
 }
-
+// --- 頁面啟動點 (最終統一版 - 修正名言啟動) ---
 window.addEventListener('load', async () => {
     // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
@@ -454,23 +454,23 @@ window.addEventListener('load', async () => {
 
     // 4. 主頁功能 (書單互動 & 名言按鈕)
     const topicButtons = document.querySelector('.topic-buttons');
-    
-    // ★★★ 關鍵：檢查按鈕是否存在，並啟動功能 ★★★
-    const quoteButton = document.getElementById('toggle-quote-btn');
-    if (quoteButton) {
-         if (typeof setupQuoteToggle === 'function') {
-             setupQuoteToggle(); // 啟動名言的開關按鈕
-         }
-         if (typeof setupWeatherInteraction === 'function') {
-             setupWeatherInteraction(); // 設置天氣資訊彈窗互動
-         }
-    }
-    
-    // 5. 書單載入
     if (topicButtons) { 
+        
+        // ★★★ 關鍵：啟動名言切換功能 ★★★
+        if (typeof setupQuoteToggle === 'function') {
+            setupQuoteToggle(); 
+        }
+
+        // 設置天氣資訊彈窗互動
+        if (typeof setupWeatherInteraction === 'function') {
+             setupWeatherInteraction();
+        }
+        
+        // 載入書籍功能
         if (typeof fetchBooks === 'function') {
              await fetchBooks('Web Development'); 
         }
+        
         if (typeof setupBookTopicInteraction === 'function') {
              setupBookTopicInteraction(); 
         }
