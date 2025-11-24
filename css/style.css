@@ -456,22 +456,25 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
 .portfolio-card .btn-link:hover i {
     transform: translateX(3px);
 }
-/* --- 多連結堆疊樣式 --- */
-/* 將連結群組推到底部 */
+/* --- 修正：多連結群組的垂直堆疊樣式 --- */
 .portfolio-card .card-content .btn-group-vertical {
-    margin-top: auto; /* 將這組連結推到底部 */
     display: flex;
     flex-direction: column; /* 垂直堆疊 */
     gap: 8px; /* 連結之間的間距 */
     padding-top: 10px; /* 與上方描述文字的間隔 */
+    
+    /* 這裡不再需要 margin-top: auto，因為我們依賴父容器 (card-content) 的 justify-content: space-between */
 }
 
-/* 確保單個連結的樣式在群組內也有效 */
-.portfolio-card .card-content .btn-group-vertical .btn-link {
-    margin-top: 0; /* 覆蓋掉可能存在的 margin-top: auto */
-}
-
-/* 確保單連結（沒有群組包裹）也能推到底部 */
+/* 確保單連結（沒有群組包裹）也能正確靠在底部 */
 .portfolio-card .card-content > .btn-link {
-    margin-top: auto;
+    /* 這裡不需要 margin-top: auto，因為 card-content 的 justify-content 會處理 */
+    padding-top: 10px; /* 與上方文字的間隔 */
+}
+.portfolio-card .card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column; 
+    flex-grow: 1; /* 確保內容區塊填滿剩餘空間 */
+    justify-content: space-between; /* 關鍵：將內容和連結推開 */
 }
