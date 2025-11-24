@@ -81,87 +81,6 @@ const experienceData = {
         `
     }
 };
-// --- 最終修正：恢復使用 Quotable API ---
-async function fetchQuoteOfTheDay() {
-    const quoteTextElement = document.getElementById('quote-text');
-    const quoteAuthorElement = document.getElementById('quote-author');
-    
-    if (!quoteTextElement || !quoteAuthorElement) return;
-
-    quoteTextElement.textContent = "正在透過 Quotable 服務載入名言...";
-    quoteAuthorElement.textContent = "";
-
-    // ★★★ 關鍵修正：切換回 Quotable API URL ★★★
-    const url = 'https://api.quotable.io/random?maxLength=100'; 
-
-    try {
-        const response = await fetch(url, {
-            // 由於在 Render 上運行，我們不需要 CORS 代理，但可以保留 Headers 增強穩定性
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-            cache: 'no-cache'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Quotable API 請求失敗，狀態碼: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Quotable API 直接返回 JSON Object { _id: ..., content: "...", author: "..." }
-        const quoteContent = data.content;
-        const quoteAuthor = data.author; 
-
-        // 成功後更新 DOM
-        quoteTextElement.textContent = `"${quoteContent}"`;
-        quoteAuthorElement.textContent = `- ${quoteAuthor}`;
-        
-        const button = document.getElementById('toggle-quote-btn');
-        if (button) {
-            button.textContent = '隱藏能量名言';
-        }
-
-    } catch (error) {
-        console.error("Fetch Quote Error:", error);
-        
-        // 失敗時顯示友善訊息
-        quoteTextElement.textContent = `⚠️ 名言服務連線失敗，請檢查網路或稍後重試。`;
-        quoteAuthorElement.textContent = "- 系統錯誤";
-        
-        const button = document.getElementById('toggle-quote-btn');
-        if (button) {
-            button.textContent = '⚠️ 載入失敗，點此重試';
-        }
-    }
-}
-
-// --- 名言切換控制函式 (主功能) ---
-function setupQuoteToggle() {
-    const button = document.getElementById('toggle-quote-btn');
-    const container = document.getElementById('quote-container');
-
-    if (!button || !container) return;
-    
-    // 綁定點擊事件
-    button.addEventListener('click', async () => {
-        const isHidden = container.style.display === 'none';
-        
-        if (isHidden) {
-            // 1. 載入並顯示容器
-            container.style.display = 'block';
-            // 2. 呼叫 API 載入內容
-            await fetchQuoteOfTheDay(); 
-            
-        } else {
-            // 隱藏容器
-            container.style.display = 'none';
-            button.textContent = '✨ 載入每日能量名言'; 
-        }
-    });
-}
-
 // 打開 Modal 視窗 (恢復為純展示內容，不再呼叫天氣 API)
 window.openModal = function(key) { 
     const data = experienceData[key];
@@ -441,13 +360,13 @@ function setupDarkModeToggle(){
         });
     }
 }
-// --- 頁面啟動點 (最終統一版 - 修正名言啟動) ---
+// --- 頁面啟動點 (最終乾淨版) ---
 window.addEventListener('load', async () => {
     // 1. 基本設定 (在所有頁面執行)
     setupDarkModeToggle(); 
     setupScrollReveal(); 
     
-    // 2. 天氣 API 數據載入：在所有頁面執行
+    // 2. 天氣 API 數據載入：在所有頁面執行 (保持)
     if (typeof fetchCurrentWeather === 'function') {
         fetchCurrentWeather();
     }
@@ -458,21 +377,16 @@ window.addEventListener('load', async () => {
         if (typeof fetchGithubRepos === 'function') fetchGithubRepos(); 
     }
 
-    // 4. 主頁功能 (書單互動 & 名言按鈕)
+    // 4. 主頁功能 (書單互動 & 天氣按鈕)
     const topicButtons = document.querySelector('.topic-buttons');
     if (topicButtons) { 
         
-        // ★★★ 關鍵：啟動名言切換功能 ★★★
-        if (typeof setupQuoteToggle === 'function') {
-            setupQuoteToggle(); 
-        }
-
-        // 設置天氣資訊彈窗互動
+        // 設置天氣資訊彈窗互動 (保持)
         if (typeof setupWeatherInteraction === 'function') {
              setupWeatherInteraction();
         }
         
-        // 載入書籍功能
+        // 載入書籍功能 (保持)
         if (typeof fetchBooks === 'function') {
              await fetchBooks('Web Development'); 
         }
