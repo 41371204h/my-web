@@ -108,11 +108,10 @@ async function fetchQuoteOfTheDay() {
         quoteTextElement.textContent = `"${data.content}"`;
         quoteAuthorElement.textContent = `- ${data.author}`;
         quoteLoaded = true; // 標記為已載入
-
     } catch (error) {
         console.error("Fetch Quote Error:", error);
-        // 失敗時顯示錯誤訊息
-        quoteTextElement.textContent = "名言載入失敗。";
+        // 失敗時顯示一個友善的訊息
+        quoteTextElement.textContent = "今天名言忙碌中，請稍後再試。";
         quoteAuthorElement.textContent = "- 系統錯誤";
     }
 }
