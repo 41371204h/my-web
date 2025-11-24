@@ -81,7 +81,35 @@ const experienceData = {
         `
     }
 };
+// --- Quote of the Day API 串接功能 (Quotable) ---
+async function fetchQuoteOfTheDay() {
+    const url = 'https://api.quotable.io/random?maxLength=100'; // 限制名言長度
 
+    const quoteTextElement = document.getElementById('quote-text');
+    const quoteAuthorElement = document.getElementById('quote-author');
+    
+    if (!quoteTextElement || !quoteAuthorElement) return;
+
+    try {
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Quote API 錯誤! 狀態碼: ${response.status}`);
+        }
+        
+        const data = await response.json();
+
+        // 成功後更新 DOM
+        quoteTextElement.textContent = `"${data.content}"`;
+        quoteAuthorElement.textContent = `- ${data.author}`;
+
+    } catch (error) {
+        console.error("Fetch Quote Error:", error);
+        // 失敗時顯示一個預設名言
+        quoteTextElement.textContent = "保持好奇心，持續學習。";
+        quoteAuthorElement.textContent = "- 網站開發者";
+    }
+}
 // 打開 Modal 視窗 (恢復為純展示內容，不再呼叫天氣 API)
 window.openModal = function(key) { 
     const data = experienceData[key];
@@ -361,45 +389,39 @@ function setupDarkModeToggle(){
         });
     }
 }
-// --- 頁面啟動點 (最終保證切換與綁定成功版) ---
+// --- 頁面啟動點 (最終統一版) ---
 window.addEventListener('load', async () => {
-    // 1. 立即執行基本設定
-    setupDarkModeToggle(); 
-    setupScrollReveal(); 
+    // ... (省略基本設定) ...
     
-    // 2. 在所有頁面載入天氣 API
+    // 2. 天氣 API 數據載入：在所有頁面執行
     if (typeof fetchCurrentWeather === 'function') {
         fetchCurrentWeather();
     }
     
-    // 3. 技能頁面專屬功能
-    if(document.body.classList.contains('skill-page')) {
-        animateBars();
-        if (typeof fetchGithubRepos === 'function') fetchGithubRepos(); 
-    }
+    // ... (省略技能頁面專屬功能) ...
 
-    // ★★★ 4. 主頁 書單功能：使用 setTimeout 延遲執行，確保 DOM 完全穩定 ★★★
+    // 4. 主頁功能 (書單互動 & 天氣按鈕 & 名言)
     const topicButtons = document.querySelector('.topic-buttons');
     if (topicButtons) { 
         
-        // 使用 setTimeout 延遲綁定，讓瀏覽器有時間完成所有渲染
-        setTimeout(async () => {
-            
-            // 立即綁定按鈕事件
-            if (typeof setupBookTopicInteraction === 'function') {
-                 setupBookTopicInteraction(); 
-            }
-            
-            // 延遲後，再呼叫 API 載入預設書籍
-            if (typeof fetchBooks === 'function') {
-                 await fetchBooks('Web Development'); 
-            }
-            
-            // 確保天氣按鈕可以互動
-            if (typeof setupWeatherInteraction === 'function') {
-                 setupWeatherInteraction();
-            }
-            
-        }, 100); // 延遲 100 毫秒
+        // ★★★ 新增：載入每日名言 ★★★
+        if (typeof fetchQuoteOfTheDay === 'function') {
+            fetchQuoteOfTheDay(); 
+        }
+
+        // 設置互動功能
+        if (typeof setupWeatherInteraction === 'function') {
+             setupWeatherInteraction();
+        }
+        
+        // 載入書籍功能
+        if (typeof fetchBooks === 'function') {
+             await fetchBooks('Web Development'); 
+        }
+        
+        if (typeof setupBookTopicInteraction === 'function') {
+             setupBookTopicInteraction(); 
+        }
     }
+    // ...
 });
