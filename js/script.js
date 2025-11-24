@@ -81,45 +81,42 @@ const experienceData = {
         `
     }
 };
-// --- 最終修正：ZenQuotes API (加入 Headers 應對嚴格 CORS) ---
+// --- 最終修正：恢復使用 Quotable API ---
 async function fetchQuoteOfTheDay() {
     const quoteTextElement = document.getElementById('quote-text');
     const quoteAuthorElement = document.getElementById('quote-author');
     
     if (!quoteTextElement || !quoteAuthorElement) return;
 
-    quoteTextElement.textContent = "正在透過 ZenQuotes 服務載入名言...";
+    quoteTextElement.textContent = "正在透過 Quotable 服務載入名言...";
     quoteAuthorElement.textContent = "";
 
-    const url = 'https://zenquotes.io/api/random'; 
+    // ★★★ 關鍵修正：切換回 Quotable API URL ★★★
+    const url = 'https://api.quotable.io/random?maxLength=100'; 
 
     try {
-        // ★★★ 關鍵修正：加入 Headers 讓 API 認為這是合法請求 ★★★
         const response = await fetch(url, {
+            // 由於在 Render 上運行，我們不需要 CORS 代理，但可以保留 Headers 增強穩定性
             method: 'GET',
             headers: {
-                // 模擬瀏覽器發出請求
-                'Accept': 'application/json', 
-                'User-Agent': 'Mozilla/5.0' 
+                'Accept': 'application/json',
             },
             cache: 'no-cache'
         });
         
-        // 檢查狀態碼
         if (!response.ok) {
-            // 如果是 429 速率限制，我們給出特定的錯誤訊息
-            if (response.status === 429) {
-                 throw new Error(`API 請求太頻繁，請等待 1 分鐘後重試。`);
-            }
-            throw new Error(`API 請求失敗，狀態碼: ${response.status}`);
+            throw new Error(`Quotable API 請求失敗，狀態碼: ${response.status}`);
         }
         
         const data = await response.json();
-        const quote = data[0]; // 獲取陣列中的第一個報價
+        
+        // Quotable API 直接返回 JSON Object { _id: ..., content: "...", author: "..." }
+        const quoteContent = data.content;
+        const quoteAuthor = data.author; 
 
         // 成功後更新 DOM
-        quoteTextElement.textContent = `"${quote.q}"`;
-        quoteAuthorElement.textContent = `- ${quote.a}`;
+        quoteTextElement.textContent = `"${quoteContent}"`;
+        quoteAuthorElement.textContent = `- ${quoteAuthor}`;
         
         const button = document.getElementById('toggle-quote-btn');
         if (button) {
@@ -130,7 +127,7 @@ async function fetchQuoteOfTheDay() {
         console.error("Fetch Quote Error:", error);
         
         // 失敗時顯示友善訊息
-        quoteTextElement.textContent = `無法連線到名言服務。錯誤: ${error.message}`;
+        quoteTextElement.textContent = `⚠️ 名言服務連線失敗，請檢查網路或稍後重試。`;
         quoteAuthorElement.textContent = "- 系統錯誤";
         
         const button = document.getElementById('toggle-quote-btn');
