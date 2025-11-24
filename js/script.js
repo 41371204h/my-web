@@ -81,43 +81,57 @@ const experienceData = {
         `
     }
 };
-// --- Quote of the Day API 串接功能 (Quotable) ---
-let quoteLoaded = false; // 追蹤名言是否已載入
-
+// --- 最終修正：使用 ZenQuotes API 獲取文字名言 ---
 async function fetchQuoteOfTheDay() {
     const quoteTextElement = document.getElementById('quote-text');
     const quoteAuthorElement = document.getElementById('quote-author');
     
-    if (quoteLoaded || !quoteTextElement || !quoteAuthorElement) return;
+    if (!quoteTextElement || !quoteAuthorElement) return;
 
     // 設置載入狀態
-    quoteTextElement.textContent = "載入中...";
+    quoteTextElement.textContent = "正在透過 ZenQuotes 服務載入名言...";
     quoteAuthorElement.textContent = "";
 
-    const url = 'https://api.quotable.io/random?maxLength=100'; 
+    // ★★★ 關鍵切換：使用 ZenQuotes API URL ★★★
+    const url = 'https://zenquotes.io/api/random'; 
 
     try {
+        // ZenQuotes API 返回的是一個陣列 [ { q: "quote", a: "author" } ]
         const response = await fetch(url);
+        
         if (!response.ok) {
-            throw new Error(`Quote API 錯誤! 狀態碼: ${response.status}`);
+            throw new Error(`ZenQuotes API 請求失敗，狀態碼: ${response.status}`);
         }
         
         const data = await response.json();
+        const quote = data[0]; // 獲取陣列中的第一個報價
 
         // 成功後更新 DOM
-        quoteTextElement.textContent = `"${data.content}"`;
-        quoteAuthorElement.textContent = `- ${data.author}`;
-        quoteLoaded = true; // 標記為已載入
+        quoteTextElement.textContent = `"${quote.q}"`; // quote.q 是報價內容
+        quoteAuthorElement.textContent = `- ${quote.a}`; // quote.a 是作者
+        
+        // 成功載入後，更新按鈕文字
+        const button = document.getElementById('toggle-quote-btn');
+        if (button) {
+            button.textContent = '隱藏能量名言';
+        }
+
     } catch (error) {
         console.error("Fetch Quote Error:", error);
-        // 失敗時顯示一個友善的訊息
-        quoteTextElement.textContent = "今天名言忙碌中，請稍後再試。";
+        
+        // 失敗時顯示友善訊息
+        quoteTextElement.textContent = "無法連線到名言服務，請檢查網路。";
         quoteAuthorElement.textContent = "- 系統錯誤";
+        
+        // 失敗時，按鈕文字更改為重試提示
+        const button = document.getElementById('toggle-quote-btn');
+        if (button) {
+            button.textContent = '⚠️ 載入失敗，點此重試';
+        }
     }
 }
 
-
-// --- 名言切換控制函式 (修正版) ---
+// --- 名言切換控制函式 (主功能) ---
 function setupQuoteToggle() {
     const button = document.getElementById('toggle-quote-btn');
     const container = document.getElementById('quote-container');
@@ -129,21 +143,19 @@ function setupQuoteToggle() {
         const isHidden = container.style.display === 'none';
         
         if (isHidden) {
-            // 點擊：顯示容器
+            // 1. 載入並顯示容器
             container.style.display = 'block';
-            button.textContent = '隱藏能量名言';
-            
-            // ★★★ 關鍵：每次點擊「顯示」都重新載入 API 內容 ★★★
+            // 2. 呼叫 API 載入內容
             await fetchQuoteOfTheDay(); 
             
         } else {
-            // 再次點擊：隱藏容器
+            // 隱藏容器
             container.style.display = 'none';
-            // 這裡按鈕文字應該要改回「顯示」狀態的文字
-            button.textContent = '✨ 顯示每日能量名言';
+            button.textContent = '✨ 載入每日能量名言'; 
         }
     });
 }
+
 // 打開 Modal 視窗 (恢復為純展示內容，不再呼叫天氣 API)
 window.openModal = function(key) { 
     const data = experienceData[key];
@@ -423,34 +435,42 @@ function setupDarkModeToggle(){
         });
     }
 }
-// --- 頁面啟動點 (最終修正版 - 修正名言啟動) ---
+
 window.addEventListener('load', async () => {
-    // ... (省略基本設定和 API 載入) ...
+    // 1. 基本設定 (在所有頁面執行)
+    setupDarkModeToggle(); 
+    setupScrollReveal(); 
+    
+    // 2. 天氣 API 數據載入：在所有頁面執行
+    if (typeof fetchCurrentWeather === 'function') {
+        fetchCurrentWeather();
+    }
+    
+    // 3. 技能頁面專屬功能
+    if(document.body.classList.contains('skill-page')) {
+        animateBars();
+        if (typeof fetchGithubRepos === 'function') fetchGithubRepos(); 
+    }
 
-    // 4. 主頁功能 (書單互動 & 天氣按鈕 & 名言)
+    // 4. 主頁功能 (書單互動 & 名言按鈕)
     const topicButtons = document.querySelector('.topic-buttons');
+    
+    // ★★★ 關鍵：檢查按鈕是否存在，並啟動功能 ★★★
+    const quoteButton = document.getElementById('toggle-quote-btn');
+    if (quoteButton) {
+         if (typeof setupQuoteToggle === 'function') {
+             setupQuoteToggle(); // 啟動名言的開關按鈕
+         }
+         if (typeof setupWeatherInteraction === 'function') {
+             setupWeatherInteraction(); // 設置天氣資訊彈窗互動
+         }
+    }
+    
+    // 5. 書單載入
     if (topicButtons) { 
-        
-        // 載入即時天氣 (不需等待)
-        if (typeof fetchCurrentWeather === 'function') {
-            fetchCurrentWeather();
-        }
-        
-        // ★★★ 新增：啟動名言切換功能 ★★★
-        if (typeof setupQuoteToggle === 'function') {
-            setupQuoteToggle(); 
-        }
-
-        // 設置互動功能
-        if (typeof setupWeatherInteraction === 'function') {
-             setupWeatherInteraction();
-        }
-        
-        // 載入書籍功能
         if (typeof fetchBooks === 'function') {
              await fetchBooks('Web Development'); 
         }
-        
         if (typeof setupBookTopicInteraction === 'function') {
              setupBookTopicInteraction(); 
         }
