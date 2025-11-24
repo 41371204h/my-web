@@ -49,11 +49,46 @@
             <div class="avatar fade-in">
                 <img src="img/S-65912838.jpg" alt="李雅郁"> 
             </div>
-            <div class="fade-in">
-                <h1>李雅郁</h1>
-                <div class="school">國立臺灣師範大學 ｜ 科技應用與人力資源發展學系</div>
-                <div style="height:16px"></div>
-                
+            <div>
+    <h1>李雅郁</h1>
+    <div class="school">國立臺灣師範大學 ｜ 科技應用與人力資源發展學系</div>
+
+    <button id="toggle-quote-btn" style="
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-top: 15px;
+        transition: opacity 0.2s ease;
+    ">
+        ✨ 載入每日能量名言
+    </button>
+    <div style="height:16px"></div>
+
+    <div class="about-card fade-in">
+        </div>
+
+    <div id="quote-container" style="
+        margin-top: 25px;
+        padding: 15px 20px;
+        background: rgba(14,165,164,0.05);
+        border-left: 5px solid var(--primary);
+        border-radius: 4px;
+        display: none; /* 預設隱藏 */
+    ">
+        <p id="quote-text" style="font-style: italic; margin: 0; color: var(--text); font-weight: 500;">
+            "點擊上方按鈕載入名言..."
+        </p>
+        <p id="quote-author" style="text-align: right; margin: 5px 0 0; font-size: 0.9em; color: var(--muted);">
+            - 載入中
+        </p>
+    </div>
+    <div class="contact-small">
+    </div>
+</div>
                 <div class="about-card stagger">
                     <p style="margin:0 0 12px 0;line-height:1.7">嗨～我是個可E可I的人！剛認識我的時候可能會覺得我安安靜靜的，那只是我還在觀察環境😉<br>
                     其實只要熟悉起來，或者有人主動和我搭話，我就會立刻把開關打開、變得很健談！</p>
@@ -69,15 +104,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div id="quote-of-the-day" class="fade-in" style="margin-top: 25px; padding: 15px 20px; background: rgba(14,165,164,0.05); border-left: 5px solid var(--primary); border-radius: 4px;">
-    <p id="quote-text" style="font-style: italic; margin: 0; color: var(--text); font-weight: 500;">
-        "知識是唯一的裝飾品。"
-    </p>
-    <p id="quote-author" style="text-align: right; margin: 5px 0 0; font-size: 0.9em; color: var(--muted);">
-        - 載入中...
-    </p>
-</div>
     <div class="container" id="advantages">
         <section>
             <h2 class="fade-in">個人優勢</h2>
