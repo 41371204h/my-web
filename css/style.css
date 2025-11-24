@@ -374,7 +374,7 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
     color: var(--text);
     font-weight: 600;
 }
-/* --- 5. Portfolio Works Section --- */
+/* --- 5. Portfolio Works Section (最終修正版) --- */
 .portfolio-grid {
     display: grid;
     /* 預設在寬螢幕下顯示三欄，確保作品排版整齊 */
@@ -385,17 +385,18 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
 }
 
 .portfolio-card {
-    background-color: var(--card-bg);
+    background: var(--card); /* 使用正確的卡片背景變數 */
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 15px rgba(2,16,18,0.08); /* 柔和陰影 */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid var(--border-color);
+    display: flex; 
+    flex-direction: column; /* 讓圖片和內容垂直堆疊 */
 }
 
 .portfolio-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 8px 25px rgba(2,16,18,0.15);
 }
 
 .portfolio-card img {
@@ -408,13 +409,15 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
 .portfolio-card .card-content {
     padding: 20px;
     display: flex;
-    flex-direction: column;
-    height: calc(100% - 200px); /* 讓內容區填滿剩餘高度 */
+    flex-direction: column; 
+    flex-grow: 1; /* 關鍵：讓內容區塊自動填滿剩餘空間 */
+    justify-content: space-between; /* 關鍵：將內容和連結推開 */
 }
 
+/* 確保標題和描述文字樣式正確 */
 .portfolio-card h3 {
     font-size: 1.35rem;
-    color: var(--text-color-primary);
+    color: var(--text);
     margin-top: 0;
     margin-bottom: 8px;
 }
@@ -434,17 +437,27 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
     margin-bottom: 10px;
 }
 
-.portfolio-card .btn-link {
-    display: inline-flex; /* 保持行內彈性 */
-    align-items: center;
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 600;
-    margin-top: auto; /* 將連結推到底部 */
+/* --- 連結群組和單連結樣式 --- */
+
+/* 確保單個連結 (非群組) 與上方內容保持間距 */
+.portfolio-card .card-content > .btn-link {
+    margin-top: 15px; /* 與上方文字的間隔 */
 }
 
-.portfolio-card .btn-link:hover {
-    text-decoration: underline;
+/* 多連結群組的容器 */
+.portfolio-card .card-content .btn-group-vertical {
+    display: flex;
+    flex-direction: column; /* 垂直堆疊 */
+    gap: 8px; /* 連結之間的間距 */
+    padding-top: 10px; /* 與上方描述文字的間隔 */
+}
+
+.portfolio-card .btn-link {
+    display: inline-flex; 
+    align-items: center;
+    color: var(--primary); 
+    text-decoration: none;
+    font-weight: 600;
 }
 
 .portfolio-card .btn-link i {
@@ -455,26 +468,4 @@ footer{padding:30px 0;text-align:center;color:var(--muted);margin-top:40px;borde
 
 .portfolio-card .btn-link:hover i {
     transform: translateX(3px);
-}
-/* --- 修正：多連結群組的垂直堆疊樣式 --- */
-.portfolio-card .card-content .btn-group-vertical {
-    display: flex;
-    flex-direction: column; /* 垂直堆疊 */
-    gap: 8px; /* 連結之間的間距 */
-    padding-top: 10px; /* 與上方描述文字的間隔 */
-    
-    /* 這裡不再需要 margin-top: auto，因為我們依賴父容器 (card-content) 的 justify-content: space-between */
-}
-
-/* 確保單連結（沒有群組包裹）也能正確靠在底部 */
-.portfolio-card .card-content > .btn-link {
-    /* 這裡不需要 margin-top: auto，因為 card-content 的 justify-content 會處理 */
-    padding-top: 10px; /* 與上方文字的間隔 */
-}
-.portfolio-card .card-content {
-    padding: 20px;
-    display: flex;
-    flex-direction: column; 
-    flex-grow: 1; /* 確保內容區塊填滿剩餘空間 */
-    justify-content: space-between; /* 關鍵：將內容和連結推開 */
 }
