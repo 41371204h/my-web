@@ -117,7 +117,7 @@ async function fetchQuoteOfTheDay() {
 }
 
 
-// --- 新增：名言切換控制函式 ---
+// --- 名言切換控制函式 (修正版) ---
 function setupQuoteToggle() {
     const button = document.getElementById('toggle-quote-btn');
     const container = document.getElementById('quote-container');
@@ -126,17 +126,20 @@ function setupQuoteToggle() {
     
     // 綁定點擊事件
     button.addEventListener('click', async () => {
-        // 1. 如果容器是隱藏的，則顯示；反之則隱藏
         const isHidden = container.style.display === 'none';
         
         if (isHidden) {
-            // 首次點擊：載入名言並顯示容器
+            // 點擊：顯示容器
             container.style.display = 'block';
             button.textContent = '隱藏能量名言';
-            await fetchQuoteOfTheDay(); // 載入 API 內容
+            
+            // ★★★ 關鍵：每次點擊「顯示」都重新載入 API 內容 ★★★
+            await fetchQuoteOfTheDay(); 
+            
         } else {
             // 再次點擊：隱藏容器
             container.style.display = 'none';
+            // 這裡按鈕文字應該要改回「顯示」狀態的文字
             button.textContent = '✨ 顯示每日能量名言';
         }
     });
